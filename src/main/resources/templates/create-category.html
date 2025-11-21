@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <main>
+        <div class="go-back">
+            <a href="dashboard.html">
+                <div class="arrow left"></div> Back
+            </a>
+        </div>
+
+        <h1>BlueVelvet Music Store</h1>
+        <h2>Add Category</h2>
+
+        <form id="createCategoryForm" method="post" th:action="@{/category}" th:object="${category}">
+
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="Category Name" th:field="*{name}" required>
+
+            <label for="image">Image</label>
+            <input type="file" id="image" accept="image/png" th:field="*{image}">
+
+            <label for="parent">Parent Category</label>
+            <select id="parent" th:field="*{parentId}">
+                <option selected th:value="${null}">None</option>
+                <option th:each="category : ${categories}" th:text="${category?.name}" th:value="${category?.id}"></option>
+            </select>
+
+            <fieldset id="enabled">
+                <legend>Enabled</legend>
+
+                <div class="radio-option">
+                    <input type="radio" id="yes" name="enabled" value=true th:field="*{enabled}" checked>
+                    <label for="yes">Yes</label>
+                </div>
+
+                <div class="radio-option">
+                    <input type="radio" id="no" name="enabled" value=false th:field="*{enabled}">
+                    <label for="no">No</label>
+                </div>
+            </fieldset>
+
+            <div class="bottom-buttons">
+                <button type="submit">Save</button>
+                <button type="button">Cancel</button>
+            </div>
+
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: "Blue Velvet"
+  datasource:
+    # Inserir nome de usuário
+    username:
+    # Inserir senha
+    password:
+    url: jdbc:mysql://localhost:3306/bluevelvet
+    driver-class-name: com.mysql.cj.jdbc.Driver
