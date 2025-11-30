@@ -25,5 +25,8 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
 
+    @Column(name="is_root")
+    private Boolean isRoot;
+
     private Boolean enabled;
 }

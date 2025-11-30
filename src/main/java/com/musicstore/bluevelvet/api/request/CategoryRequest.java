@@ -9,4 +9,5 @@ public class CategoryRequest {
     private String image;
     private Long parentId;
     private Boolean enabled;
+    private Boolean isRoot;
 }

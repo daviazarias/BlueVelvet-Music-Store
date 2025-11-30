@@ -28,12 +28,29 @@ public class CategoryService {
         return CategoryConverter.convertToCategoryResponse(category);
     }
 
-    public Page<CategoryResponse> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(CategoryConverter::convertToCategoryResponse);
+    public Page<CategoryResponse> findAllRoots(Pageable pageable){
+        return repository
+                .findAll(pageable)
+                .map(CategoryConverter::convertToCategoryResponse);
     }
 
-    public List<CategoryResponse> findAll() {
-        return repository.findAll().stream().map(CategoryConverter::convertToCategoryResponse).toList();
+    public Page<CategoryResponse> findAllRootsWithOrderedChildren(Pageable pageable){
+        Page<Category> parentCategories = repository.findByIsRootIsTrue(pageable);
+
+        for(var parentCategory : parentCategories)
+            parentCategory.setChildren(
+                    repository.findByParent(parentCategory, pageable.getSort())
+            );
+
+        return parentCategories.map(CategoryConverter::convertToCategoryResponse);
+    }
+
+    public List<CategoryResponse> findAllRoots() {
+        return repository
+                .findByIsRootIsTrue()
+                .stream()
+                .map(CategoryConverter::convertToCategoryResponse)
+                .toList();
     }
 
     public void deleteById(Long id){

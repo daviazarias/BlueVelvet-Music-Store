@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main>
+    <h1>BlueVelvet Music Store</h1>
+    <h2>Product Management</h2>
+
+    <!--
+    TRABALHO: O nome (Atticus) e papel (Administrator) abaixo foram inseridos
+    hard-coded. Na sua soluçõa o nome e papel exibidos deverão ser obtidos com
+    base no usuário autenticado.
+    Template:  Welcome, {name} {(role)}
+    -->
+    <div>Welcome, Atticus (Administrator)
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="categoryControls">
+        <button id="resetProductsBtn">Reset Products to Initial State</button>
+        <button id="addProductBtn">Add Product</button>
+        <input type="text" id="searchInput" placeholder="Search products...">
+        <select id="sortSelect">
+            <option value="id" selected>Sort by ID</option>
+            <option value="name">Sort by Name</option>
+        </select>
+    </div>
+
+    <table id="categoryTable">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="categoryList">
+        <tr th:each="category : ${categories}">
+            <td><img th:src="${category?.image}" alt="" style="width: 100; height: 100px;"></td>
+            <td th:text="${category?.name}"></td>
+            <td th:text="${category?.id}">1</td>
+            <td>
+                <button>View</button>
+                <button>Edit</button>
+                <button class="delete-btn">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="pagination">
+        <button>First...</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>...Last</button>
+    </div>
+</main>
+<script>
+    // JavaScript to show a delete confirmation alert
+    document.addEventListener('DOMContentLoaded', () => {
+        // Select all delete buttons
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        console.log(deleteButtons);
+
+        // Add event listener to each delete button
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                // Show confirmation alert
+                const confirmation = confirm("Are you sure you want to delete this category?");
+                if (!confirmation) {
+                    // Prevent default action if not confirmed
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

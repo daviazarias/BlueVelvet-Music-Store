@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List categories - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main>
+    <h1>BlueVelvet Music Store</h1>
+    <h2>List Categories</h2>
+
+    <!--
+    TRABALHO: O nome (Atticus) e papel (Administrator) abaixo foram inseridos
+    hard-coded. Na sua soluçõa o nome e papel exibidos deverão ser obtidos com
+    base no usuário autenticado.
+    Template:  Welcome, {name} {(role)}
+    -->
+    <div>Welcome, Atticus (Administrator)
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="categoryControls">
+        <button id="addCategoryBtn" onclick="window.location='/create-category'">Add Category</button>
+<!--    <input type="text" id="searchInput" placeholder="Search categories...">  -->
+        <select id="sortSelect" th:value="*{sort}" onChange="switchSort()">
+            <option th:value="name" th:selected="${sort == 'name'}">Sort by Name</option>
+            <option th:value="id" th:selected="${sort == 'id'}">Sort by ID</option>
+        </select>
+    </div>
+
+    <table id="categoryTable">
+        <thead>
+        <tr>
+            <th>Category</th>
+        </tr>
+        </thead>
+        <tbody id="categoryList">
+        <tr th:each="category : ${categories}">
+            <td>
+                <div th:fragment="categoryTree(category)">
+                    <p th:text="${category?.name}"></p>
+                    <ul th:if="${not #lists.isEmpty(category.children)}">
+                        <li th:each="child : ${category.children}">
+                            <div th:replace="~{::categoryTree(${child})}"></div>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="pagination">
+        <button>First...</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>...Last</button>
+    </div>
+</main>
+<script th:inline="javascript">
+        function switchSort() {
+            const selectedSort = document.getElementById("sortSelect").value;
+            if(selectedSort){
+                window.location.href = [[@{/list?&sort=}]] + selectedSort;
+            }
+        }
+</script>
+</body>
+
+</html>

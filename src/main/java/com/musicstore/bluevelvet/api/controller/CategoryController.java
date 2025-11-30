@@ -29,8 +29,7 @@ public class CategoryController {
     @Operation(summary = "Get all categories", description = "Get all product categories from the Blue Velvet Music Store")
     public ResponseEntity<Page<CategoryResponse>> getAllCategories(Pageable pageable) {
         log.info("Request received to fetch all categories");
-
-        return ResponseEntity.ok(service.findAll(pageable));
+        return ResponseEntity.ok(service.findAllRoots(pageable));
     }
 
     @PostMapping

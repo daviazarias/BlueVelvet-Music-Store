@@ -12,5 +12,7 @@ public class CategoryResponse {
     private String image;
     private Long parentId;
     private Boolean enabled;
+    private Boolean isRoot;
+    private List<CategoryResponse> children;
 }
 

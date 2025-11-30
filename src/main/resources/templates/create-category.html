@@ -9,7 +9,7 @@
 <body>
     <main>
         <div class="go-back">
-            <a href="dashboard.html">
+            <a onclick="goBack()">
                 <div class="arrow left"></div> Back
             </a>
         </div>
@@ -52,5 +52,10 @@
 
         </form>
     </main>
+    <script>
+        function goBack() {
+            history.back();
+        }
+    </script>
 </body>
 </html>

@@ -16,8 +16,9 @@ public class CategoryConverter {
                 .name(category.getName())
                 .image(category.getImage())
                 .parentId(getParentId(category))
-                // .children(getChildrenList(category))
+                .isRoot(category.getIsRoot())
                 .enabled(category.getEnabled())
+                .children(getChildrenList(category))
                 .build();
     }
 
@@ -25,14 +26,13 @@ public class CategoryConverter {
         return  Category.builder()
                 .name(request.getName())
                 .image(request.getImage())
+                .isRoot(request.getIsRoot())
                 .enabled(request.getEnabled())
                 .build();
     }
 
     private static Long getParentId(Category category){
-        return  category.getParent() == null
-                ? null
-                : category.getParent().getId();
+        return  category.getParent() == null ? null : category.getParent().getId();
     }
 
     private static List<CategoryResponse> getChildrenList(Category category){
