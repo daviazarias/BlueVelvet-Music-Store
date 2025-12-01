@@ -46,12 +46,20 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/dashboard", true)
                         .failureUrl("/login?error=true")
                 )
+                // ← NOVO: Remember Me (Lembrar-se de mim)
+                .rememberMe(remember -> remember
+                        .key("bluevelvetSecretKey2024")  // Chave secreta para encriptação
+                        .tokenValiditySeconds(86400 * 1)  // 7 dias
+                        .rememberMeParameter("remember-me")  // Nome do parâmetro do checkbox
+                        .rememberMeCookieName("bluevelvet-remember-me")  // Nome do cookie
+                        .userDetailsService(userDetailsService)  // Serviço de detalhes do usuário
+                )
                 // ← NOVO: Logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "bluevelvet-remember-me")  // Remove também o cookie remember-me
                 )
                 .httpBasic(Customizer.withDefaults());
 
