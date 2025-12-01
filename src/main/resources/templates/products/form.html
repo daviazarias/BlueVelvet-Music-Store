@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produto - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/scripts.js}" defer></script>
+</head>
+<body>
+<main>
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <h2 th:if="${viewMode == 'create'}">Adicionar Novo Produto</h2>
+    <h2 th:if="${viewMode == 'edit'}">Editar Produto</h2>
+    <h2 th:if="${viewMode == 'view'}">Visualizar Produto</h2>
+
+    <form th:if="${viewMode != 'view'}"
+          method="POST"
+          enctype="multipart/form-data"
+          th:action="${viewMode == 'create'} ? @{/products} : @{'/products/' + ${product.id}}"
+          class="form-container">
+
+        <div class="form-group">
+            <label for="name">Nome do Produto *</label>
+            <input id="name" name="name" required th:value="${product.name}" type="text">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Descrição</label>
+            <textarea id="description" name="description" rows="4" th:text="${product.description}"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Preço (R$) *</label>
+            <input id="price" name="price" required step="0.01" th:value="${product.price}" type="number">
+        </div>
+
+        <div class="form-group">
+            <label for="stockQuantity">Quantidade em Estoque *</label>
+            <input id="stockQuantity" name="stockQuantity" required th:value="${product.stockQuantity}" type="number">
+        </div>
+
+        <div class="form-group">
+            <label for="categoryId">Categoria *</label>
+            <select id="categoryId" name="categoryId" required>
+                <option value="">Selecione uma categoria</option>
+                <option th:each="category : ${categories}"
+                        th:selected="${product.categoryId == category.id}"
+                        th:text="${category.name}"
+                        th:value="${category.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="imageFile">Imagem do Produto</label>
+            <input accept="image/*" id="imageFile" name="imageFile" type="file">
+            <small th:if="${product.image}">Imagem atual: <span th:text="${product.image}"></span></small>
+        </div>
+
+        <div class="form-group">
+            <label for="enabled">Habilitado</label>
+            <input id="enabled" name="enabled" th:checked="${product.enabled != false}" type="checkbox" value="true">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" th:text="${viewMode == 'create'} ? 'Criar Produto' : 'Atualizar Produto'"></button>
+            <a href="/products">
+                <button type="button">Cancelar</button>
+            </a>
+        </div>
+    </form>
+
+    <!-- Modo Visualização -->
+    <div th:if="${viewMode == 'view'}" class="view-container">
+        <div class="view-field">
+            <label>ID:</label>
+            <span th:text="${product.id}"></span>
+        </div>
+        <div class="view-field">
+            <label>Nome:</label>
+            <span th:text="${product.name}"></span>
+        </div>
+        <div class="view-field">
+            <label>Descrição:</label>
+            <span th:text="${product.description}"></span>
+        </div>
+        <div class="view-field">
+            <label>Preço:</label>
+            <span th:text="${'R$ ' + #numbers.formatDecimal(product.price, 1, 2, 'POINT')}"></span>
+        </div>
+        <div class="view-field">
+            <label>Estoque:</label>
+            <span th:text="${product.stockQuantity}"></span>
+        </div>
+        <div class="view-field">
+            <label>Categoria:</label>
+            <span th:text="${product.categoryName}"></span>
+        </div>
+        <div class="view-field" th:if="${product.image}">
+            <label>Imagem:</label>
+            <img th:src="@{'/uploads/' + ${product.image}}" alt="Imagem do Produto" style="max-width: 200px;">
+        </div>
+        <div class="view-field">
+            <label>Habilitado:</label>
+            <span th:if="${product.enabled}">✓ Sim</span>
+            <span th:unless="${product.enabled}">✗ Não</span>
+        </div>
+
+        <div class="form-actions">
+            <a th:href="@{'/products/' + ${product.id} + '/edit'}">
+                <button type="button">Editar</button>
+            </a>
+            <a href="/products">
+                <button type="button">Voltar</button>
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

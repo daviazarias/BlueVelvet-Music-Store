@@ -56,9 +56,14 @@ public class CategoryService {
 
     public void deleteById(Long id){
 
-        repository.findById(id).orElseThrow(() ->
+        Category category = repository.findById(id).orElseThrow(() ->
                 new CategoryNotFoundException(UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D.formatted(id))
         );
+
+        // Validar se a categoria tem subcategorias
+        if (category.getChildren() != null && !category.getChildren().isEmpty()) {
+            throw new IllegalArgumentException("Não é possível deletar uma categoria que possui subcategorias.");
+        }
 
         repository.deleteById(id);
     }
@@ -190,6 +195,12 @@ public class CategoryService {
                 addChildrenToCSV(csv, child.getChildren(), indent + "  ");
             }
         }
+    }
+
+    public String generateCSVFileName() {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        return "categories_" + now.format(formatter) + ".csv";
     }
 
 }

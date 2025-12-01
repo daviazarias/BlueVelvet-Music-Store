@@ -2,9 +2,9 @@ spring:
   application:
     name: "Blue Velvet"
   datasource:
-    username: root
-    password: root
-    url: jdbc:mysql://localhost:3306/bluevelvet
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/bluevelvet}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -23,12 +23,15 @@ spring:
       max-request-size: 10MB
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8082}
 
 # Configurações personalizadas
 app:
   upload:
-    dir: src/main/resources/static/uploads
+    dir: ${UPLOAD_DIR:src/main/resources/static/uploads}
+  admin:
+    username: ${ADMIN_EMAIL:admin@bluevelvet.com}
+    password: ${ADMIN_PASSWORD:123456789}
 
 logging:
   level:

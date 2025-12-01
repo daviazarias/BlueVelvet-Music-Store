@@ -5,62 +5,227 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Registro - BlueVelvet Music Store</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/scripts.js}" defer></script>
     <style>
-        .error-box {
-            background-color: #ffcccc;
-            border: 2px solid #cc0000;
-            color: #721c24;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-        .success-box {
-            background-color: #ccffcc;
-            border: 2px solid #00cc00;
-            color: #155724;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+        .auth-main {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            animation: slideUp 0.5s ease-out;
+            overflow-y: auto;
+            max-height: 95vh;
         }
 
-        .info-box {
-            background-color: #cce5ff;
-            border: 2px solid #0066cc;
-            color: #004a99;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-title {
+            text-align: center;
+            margin: 0 0 1.5rem 0;
+            color: #333;
+        }
+
+        .auth-title:first-child {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-title:nth-child(2) {
+            font-size: 1.4rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .auth-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .auth-message.error {
+            background-color: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+        }
+
+        .auth-message.success {
+            background-color: #efe;
+            color: #393;
+            border-left: 4px solid #393;
+        }
+
+        .auth-message.info {
+            background-color: #e7f3ff;
+            color: #0066cc;
+            border-left: 4px solid #0066cc;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .auth-form > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .auth-form label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .auth-form input[type="email"],
+        .auth-form input[type="password"],
+        .auth-form select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .auth-form input[type="email"]:focus,
+        .auth-form input[type="password"]:focus,
+        .auth-form select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .auth-form input::placeholder {
+            color: #999;
+        }
+
+        .auth-form select {
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .auth-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-form button:active {
+            transform: translateY(0);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .auth-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .auth-main {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-<main>
-    <h1>🎵 BlueVelvet Music Store</h1>
-    <h2>Cadastro de Novo Usuário</h2>
+<main class="auth-main">
+    <h1 class="auth-title">🎵 BlueVelvet Music Store</h1>
+    <h2 class="auth-title">Cadastro de Novo Usuário</h2>
 
     <!-- Informação -->
-    <div class="info-box">
+    <div class="auth-message info">
         ℹ️ Apenas administradores podem registrar novos usuários no sistema.
     </div>
 
     <!-- Mensagem de Erro -->
-    <div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="auth-message error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
     <!-- Mensagem de Sucesso -->
-    <div class="success-box" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="auth-message success" th:if="${successMessage}" th:text="${successMessage}"></div>
 
     <!-- Formulário de Registro -->
-    <form method="POST" th:action="@{/register}">
-        <label>
-            <input name="email" placeholder="E-mail" required type="email">
-        </label>
-        <label>
-            <input name="password" placeholder="Senha (mínimo 8 caracteres)" required type="password">
-        </label>
+    <form method="POST" th:action="@{/register}" class="auth-form">
+        <div>
+            <label for="email">E-mail</label>
+            <input id="email" name="email" placeholder="Digite o e-mail" required type="email">
+        </div>
 
-        <label>
-            <select name="role" required>
+        <div>
+            <label for="password">Senha</label>
+            <input id="password" name="password" placeholder="Digite a senha (mínimo 8 caracteres)" required
+                   type="password">
+        </div>
+
+        <div>
+            <label for="role">Função</label>
+            <select id="role" name="role" required>
                 <option value="">-- Selecione uma função --</option>
                 <option value="ADMINISTRATOR">Administrador</option>
                 <option value="SALES_MANAGER">Gerente de Vendas</option>
@@ -68,13 +233,13 @@
                 <option value="ASSISTANT">Assistente</option>
                 <option value="SHIPPING_MANAGER">Gerente de Envios</option>
             </select>
-        </label>
+        </div>
 
         <button type="submit">Cadastrar</button>
     </form>
 
-    <p style="text-align: center; margin-top: 15px;">
-        Já tem uma conta? <a style="color: #333; font-weight: bold;" th:href="@{/login}">Faça login</a>
+    <p class="auth-link">
+        Já tem uma conta? <a th:href="@{/login}">Faça login</a>
     </p>
 </main>
 </body>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - BlueVelvet Music Store</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/scripts.js}" defer></script>
 </head>
 <body>
 <main>
@@ -12,47 +13,63 @@
     <h2>Gerenciamento de Categorias</h2>
 
     <!-- Seção de Boas-vindas com usuário logado -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+    <div class="welcome-container">
         <div>
-            <strong th:text="'Bem-vindo, ' + ${username}"></strong>
+            <strong th:text="'Bem-vindo, ' + ${userName}"></strong>
             <span th:text="' (' + ${role} + ')'"></span>
         </div>
-        <form method="POST" style="margin: 0;" th:action="@{/logout}">
-            <button id="logoutBtn" type="submit">Logout</button>
-        </form>
+        <div class="welcome-actions">
+            <a class="link-clean" th:href="@{/users/create}">
+                <button id="addUserBtn" type="button">Adicionar Usuário</button>
+            </a>
+            <a class="link-clean" th:href="@{/products}">
+                <button id="productsBtn" type="button">Gerenciar Produtos</button>
+            </a>
+            <form method="POST" class="form-no-margin" th:action="@{/logout}">
+                <button id="logoutBtn" type="submit">Logout</button>
+            </form>
+        </div>
     </div>
 
     <!-- Mensagens Flash -->
-    <div style="background-color: #d4edda; border: 2px solid #28a745; color: #155724; padding: 10px; margin-bottom: 10px; border-radius: 5px;"
+    <div class="message-success"
          th:if="${successMessage}"
          th:text="${successMessage}"></div>
-    <div style="background-color: #f8d7da; border: 2px solid #dc3545; color: #721c24; padding: 10px; margin-bottom: 10px; border-radius: 5px;"
+    <div class="message-error"
          th:if="${errorMessage}"
          th:text="${errorMessage}"></div>
 
 
     <!-- Controles de Categoria -->
     <div id="categoryControls">
-        <form method="GET" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;"
+        <form method="GET" class="search-form"
               th:action="@{/dashboard/search}">
-            <button style="width: auto;" type="submit">Buscar</button>
+            <button class="button-auto" type="submit">Buscar</button>
             <label for="search"></label><input id="search" name="q" placeholder="Buscar por nome de categoria..."
                                                th:value="${search}" type="text">
             <label for="sortSelect"></label><select id="sortSelect" name="sort" th:onchange="updateSort()">
             <option th:selected="${sort == 'name'}" value="name">Ordenar por Nome</option>
             <option th:selected="${sort == 'id'}" value="id">Ordenar por ID</option>
         </select>
-            <button style="width: auto;" th:onclick="clearSearch()" type="button">Limpar</button>
+            <button class="button-auto" th:onclick="clearSearch()" type="button">Limpar</button>
         </form>
 
         <form method="POST" onsubmit="return confirm('Tem certeza que deseja resetar as categorias?');"
-              style="display: inline;"
+              class="form-inline"
               th:action="@{/category/reset}">
             <button id="resetProductsBtn" type="submit">Reset para Estado Inicial</button>
         </form>
 
-        <a style="text-decoration: none;" th:href="@{/create-category}">
+        <a class="link-clean" th:href="@{/create-category}">
             <button id="addCategoryBtn" type="button">Adicionar Categoria</button>
+        </a>
+
+        <a class="link-clean" th:href="@{/category/export/csv}">
+            <button id="exportCsvBtn" type="button">Exportar CSV</button>
+        </a>
+
+        <a class="link-clean" th:href="@{/products}">
+            <button id="viewProductsBtn" type="button">Ver Produtos</button>
         </a>
     </div>
 
@@ -70,7 +87,7 @@
         <tbody id="categoryList">
         <tr th:each="category : ${categories}">
             <td>
-                <img style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"
+                <img class="image-thumbnail"
                      th:alt="${category.name}"
                      th:if="${category.image}"
                      th:src="@{'/uploads/' + ${category.image}}">
@@ -79,20 +96,20 @@
             <td th:text="${category.name}"></td>
             <td th:text="${category.id}"></td>
             <td>
-                <span style="color: green; font-weight: bold;" th:if="${category.enabled}">✓ Sim</span>
-                <span style="color: red; font-weight: bold;" th:unless="${category.enabled}">✗ Não</span>
+                <span class="status-text-enabled" th:if="${category.enabled}">✓ Sim</span>
+                <span class="status-text-disabled" th:unless="${category.enabled}">✗ Não</span>
             </td>
             <!-- Na tabela de categorias, na coluna de Ações: -->
             <td>
-                <a style="text-decoration: none;" th:href="@{'/category/' + ${category.id}}">
+                <a class="link-clean" th:href="@{'/category/' + ${category.id}}">
                     <button type="button">Visualizar</button>
                 </a>
-                <a style="text-decoration: none;" th:href="@{'/category/' + ${category.id} + '/edit'}">
+                <a class="link-clean" th:href="@{'/category/' + ${category.id} + '/edit'}">
                     <button type="button">Editar</button>
                 </a>
                 <form method="POST"
                       onsubmit="return confirm('Tem certeza que deseja deletar esta categoria?');"
-                      style="display: inline;"
+                      class="form-inline"
                       th:action="@{'/category/' + ${category.id} + '/delete'}">
                     <button class="delete-btn" type="submit">Deletar</button>
                 </form>
@@ -103,75 +120,18 @@
 
     <!-- Paginação -->
     <div id="pagination">
-        <button th:if="${currentPage > 0}" th:onclick="goToPage(0)">Primeira...</button>
-        <button th:if="${currentPage > 0}" th:onclick="goToPage(${currentPage - 1})">Anterior</button>
+        <button th:if="${currentPage > 0}" th:onclick="'goToPage(0)'">Primeira...</button>
+        <button th:if="${currentPage > 0}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">Anterior</button>
 
         <button th:class="${page == currentPage} ? 'active' : ''"
                 th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
-                th:onclick="goToPage(${page})"
+                th:onclick="'goToPage(' + ${page} + ')'"
                 th:text="${page + 1}">
         </button>
 
-        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToPage(${currentPage + 1})">Próxima</button>
-        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToPage(${totalPages - 1})">...Última</button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">Próxima</button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${totalPages - 1} + ')'">...Última</button>
     </div>
 </main>
-
-<script th:inline="javascript">
-    function resetCategories() {
-        if (confirm('Tem certeza que deseja resetar as categorias para o estado inicial?')) {
-            window.location.href = [[@{/category/reset
-        }]]
-
-        }
-    }
-
-    function clearSearch() {
-        document.querySelector('input[name="q"]').value = '';
-        window.location.href = [[@{/dashboard}]];
-    }
-
-        function updateSort() {
-            const sortValue = document.getElementById('sortSelect').value;
-            const searchValue = document.querySelector('input[name="q"]').value;
-            let url;
-
-            if (searchValue) {
-                url = [[@{/dashboard/search
-            }]]
-                +'?q=' + encodeURIComponent(searchValue) + '&sort=' + sortValue;
-            } else {
-                url = [[@{/dashboard}]] + '?sort=' + sortValue;
-            }
-                window.location.href = url;
-            }
-
-            function goToPage(page) {
-                const sortValue = document.getElementById('sortSelect').value;
-                const searchValue = document.querySelector('input[name="q"]').value;
-                let url;
-
-                if (searchValue) {
-                    url = [[@{/dashboard/search
-                }]]
-                    +'?q=' + encodeURIComponent(searchValue) + '&page=' + page + '&sort=' + sortValue;
-                } else {
-                    url = [[@{/dashboard}]] + '?page=' + page + '&sort=' + sortValue;
-                }
-                    window.location.href = url;
-                }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const confirmation = confirm("Tem certeza que deseja deletar esta categoria?");
-                if (!confirmation) {
-                    event.preventDefault();
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>

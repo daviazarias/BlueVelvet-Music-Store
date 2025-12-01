@@ -31,3 +31,44 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables (SECURITY) ###
+.env
+.env.local
+.env.production
+.env.development
+*.env
+!.env.example
+
+### Application Configuration (SECURITY) ###
+application-local.yaml
+application-local.yml
+application-dev.yaml
+application-dev.yml
+application-prod.yaml
+application-prod.yml
+
+### Database ###
+*.db
+*.sqlite
+*.sql.backup
+
+### Uploads ###
+src/main/resources/static/uploads/*
+!src/main/resources/static/uploads/.gitignore
+
+### Logs ###
+*.log
+logs/
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Temporary ###
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+

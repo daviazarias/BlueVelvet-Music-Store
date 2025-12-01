@@ -26,14 +26,14 @@ public class ThymeleafController {
     public static final String SUCCESS_MESSAGE = "successMessage";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String CATEGORIES = "categories";
-    private static final Integer DEFAULT_DASHBOARD_PAGE_SIZE = 10;
-    private static final Integer DEFAULT_LIST_PAGE_SIZE = 5;
+    private static final Integer DEFAULT_DASHBOARD_PAGE_SIZE = 10;  // US-2032: 10 categorias por página no dashboard
+    private static final Integer DEFAULT_LIST_PAGE_SIZE = 5;      // US-0907: 5 categorias raiz por página na listagem
     private final CategoryService service;
     private final FileStorageService fileStorageService;
 
     @GetMapping("/")
     public String getHomePage(){
-        return "index";
+        return "redirect:/shop";
     }
 
     // ============== DASHBOARD ==============
@@ -48,7 +48,13 @@ public class ThymeleafController {
     ) {
         // Adiciona informações do usuário autenticado
         if (authentication != null) {
-            model.addAttribute("username", authentication.getName());
+            String userName = "Usuário";
+            if (authentication.getPrincipal() instanceof com.musicstore.bluevelvet.domain.service.CustomUserDetails) {
+                com.musicstore.bluevelvet.domain.service.CustomUserDetails userDetails =
+                        (com.musicstore.bluevelvet.domain.service.CustomUserDetails) authentication.getPrincipal();
+                userName = userDetails.getName();
+            }
+            model.addAttribute("userName", userName);
             String role = authentication.getAuthorities().stream()
                     .map(Object::toString)
                     .findFirst()
@@ -131,8 +137,9 @@ public class ThymeleafController {
     public String createCategoryForm(Model model) {
         List<CategoryResponse> responseList = service.findAllRoots();
         model.addAttribute("parentCategories", responseList);
-        model.addAttribute(CATEGORY, new CategoryRequest());
-        return "create-category";
+        model.addAttribute("category", new CategoryRequest());
+        model.addAttribute("viewMode", "create");
+        return "form-category";
     }
 
     @PostMapping("/category")
@@ -164,12 +171,24 @@ public class ThymeleafController {
             CategoryResponse category = service.findById(id);
             List<CategoryResponse> parentCategories = service.findAllRoots();
 
-            model.addAttribute(CATEGORY, category);
+            model.addAttribute("category", category);
             model.addAttribute("parentCategories", parentCategories);
-            return "edit-category";
+            model.addAttribute("viewMode", "edit");
+
+            // Busca categoria pai se existir
+            if (category.getParentId() != null) {
+                try {
+                    CategoryResponse parent = service.findById(category.getParentId());
+                    model.addAttribute("parentCategory", parent);
+                } catch (Exception e) {
+                    model.addAttribute("parentCategory", null);
+                }
+            }
+
+            return "form-category";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Categoria não encontrada");
-            return REDIRECT_DASHBOARD;
+            redirectAttributes.addFlashAttribute("errorMessage", "Categoria não encontrada");
+            return "redirect:/dashboard";
         }
     }
 
@@ -207,14 +226,18 @@ public class ThymeleafController {
     public String viewCategory(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             CategoryResponse category = service.findById(id);
+            List<CategoryResponse> parentCategories = service.findAllRoots();
+
             model.addAttribute(CATEGORY, category);
+            model.addAttribute("parentCategories", parentCategories);
+            model.addAttribute("viewMode", "view");
 
             // Busca categoria pai se existir
             if (category.getParentId() != null) {
                 fatherCategory(model, category);
             }
 
-            return "view-category";
+            return "form-category";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Categoria não encontrada");
             return REDIRECT_DASHBOARD;
@@ -261,10 +284,19 @@ public class ThymeleafController {
     // ============== EXPORT CSV ==============
 
     @GetMapping("/category/export/csv")
-    public String exportCategoriesCSV(Model model) {
-        List<CategoryResponse> categories = service.findAllRoots();
-        // Lógica de export será implementada em um service separado
-        model.addAttribute(CATEGORIES, categories);
-        return REDIRECT_DASHBOARD;
+    public org.springframework.http.ResponseEntity<byte[]> exportCategoriesCSV() {
+        try {
+            String csvContent = service.exportToCSV();
+            String fileName = service.generateCSVFileName();
+
+            byte[] csvBytes = csvContent.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+            return org.springframework.http.ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                    .header("Content-Type", "text/csv; charset=UTF-8")
+                    .body(csvBytes);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

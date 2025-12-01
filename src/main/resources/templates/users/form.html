@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Usuário - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/scripts.js}" defer></script>
+</head>
+<body>
+<main>
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <h2>Criar Novo Usuário</h2>
+
+    <form method="POST" th:action="@{/users}" class="form-container">
+        <div class="form-group">
+            <label for="email">Email *</label>
+            <input id="email" name="email" required type="email">
+        </div>
+
+        <div class="form-group">
+            <label for="name">Nome Completo *</label>
+            <input id="name" name="name" required type="text">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Senha (Mínimo 8 caracteres) *</label>
+            <input id="password" minlength="8" name="password" required type="password">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Papel do Usuário *</label>
+            <select id="role" name="role" required>
+                <option value="">Selecione um papel</option>
+                <option value="ADMINISTRATOR">Administrador</option>
+                <option value="SALES_MANAGER">Gerente de Vendas</option>
+                <option value="EDITOR">Editor</option>
+                <option value="ASSISTANT">Assistente</option>
+                <option value="SHIPPING_MANAGER">Gerente de Envios</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">Criar Usuário</button>
+            <a href="/dashboard">
+                <button type="button">Cancelar</button>
+            </a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

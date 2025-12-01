@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Loja - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/scripts.js}" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .shop-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .shop-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .shop-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .category-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover .category-image img {
+            transform: scale(1.1);
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #999;
+        }
+
+        .category-info {
+            padding: 1.5rem;
+        }
+
+        .category-info h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 0.75rem 1.25rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #e7f3ff;
+            border-radius: 8px;
+        }
+
+        .admin-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .shop-header h1 {
+                font-size: 2rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .category-image {
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="shop-header">
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <p>Explore nossas categorias de instrumentos musicais</p>
+</header>
+
+<div class="shop-container">
+    <!-- Grid de Categorias -->
+    <div th:if="${!categories.isEmpty()}" class="categories-grid">
+        <div th:each="category : ${categories}" class="category-card">
+            <a th:href="@{'/shop/category/' + ${category.id}}">
+                <div class="category-image">
+                    <img th:if="${category.image}"
+                         th:src="@{'/uploads/' + ${category.image}}"
+                         th:alt="${category.name}">
+                    <div th:unless="${category.image}" class="no-image">
+                        <span>🎸</span>
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h3 th:text="${category.name}"></h3>
+                    <span th:if="${category.enabled}" class="category-status status-enabled">
+                            ✓ Disponível
+                        </span>
+                    <span th:unless="${category.enabled}" class="category-status status-disabled">
+                            ✗ Indisponível
+                        </span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Estado Vazio -->
+    <div th:if="${categories.isEmpty()}" class="empty-state">
+        <h2>Nenhuma categoria disponível</h2>
+        <p>As categorias aparecerão aqui assim que forem adicionadas.</p>
+    </div>
+
+    <!-- Paginação -->
+    <div th:if="${totalPages > 1}" class="pagination">
+        <button th:disabled="${currentPage == 0}"
+                th:onclick="'goToPage(0)'">
+            Primeira
+        </button>
+
+        <button th:disabled="${currentPage == 0}"
+                th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+            Anterior
+        </button>
+
+        <button th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                th:class="${page == currentPage} ? 'active' : ''"
+                th:onclick="'goToPage(' + ${page} + ')'"
+                th:text="${page + 1}">
+        </button>
+
+        <button th:disabled="${currentPage >= totalPages - 1}"
+                th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+            Próxima
+        </button>
+
+        <button th:disabled="${currentPage >= totalPages - 1}"
+                th:onclick="'goToPage(' + ${totalPages - 1} + ')'">
+            Última
+        </button>
+    </div>
+
+    <!-- Link para Admin -->
+    <div class="admin-link">
+        <a th:href="@{/login}">🔐 Área Administrativa</a>
+    </div>
+</div>
+
+<script>
+    function goToPage(page) {
+        window.location.href = '/shop?page=' + page;
+    }
+</script>
+</body>
+</html>
+
