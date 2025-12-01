@@ -17,12 +17,13 @@ import java.util.List;
 @Service @Log4j2 @RequiredArgsConstructor
 public class CategoryService {
 
+    public static final String UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D = "Unable to find a category with id %d";
     private final CategoryRepository repository;
 
     public CategoryResponse findById(Long id) {
 
         Category category = repository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException("Unable to find a category with id %d".formatted(id))
+                new CategoryNotFoundException(UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D.formatted(id))
         );
 
         return CategoryConverter.convertToCategoryResponse(category);
@@ -56,7 +57,7 @@ public class CategoryService {
     public void deleteById(Long id){
 
         repository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException("Unable to find a category with id %d".formatted(id))
+                new CategoryNotFoundException(UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D.formatted(id))
         );
 
         repository.deleteById(id);
@@ -74,7 +75,7 @@ public class CategoryService {
     public CategoryResponse updateCategory(Long id, CategoryRequest request){
 
         Category oldCategory = repository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException("Unable to find a category with id %d".formatted(id))
+                new CategoryNotFoundException(UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D.formatted(id))
         );
 
         Category updatedCategory = CategoryConverter.convertToCategory(request);
@@ -86,7 +87,7 @@ public class CategoryService {
 
     public CategoryResponse partiallyUpdateCategory(Long id, CategoryRequest request){
         Category category = repository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException("Unable to find a category with id %d".formatted(id))
+                new CategoryNotFoundException(UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D.formatted(id))
         );
 
         if(request.getName() != null)
@@ -110,4 +111,85 @@ public class CategoryService {
             category.setParent(parent);
         }
     }
+
+    // ============== NOVOS MÉTODOS A ADICIONAR ==============
+
+    /**
+     * Encontra todas as categorias raiz com paginação
+     */
+    public Page<CategoryResponse> findAllRootsPaginated(Pageable pageable) {
+        return repository
+                .findByIsRootIsTrue(pageable)
+                .map(CategoryConverter::convertToCategoryResponse);
+    }
+
+    /**
+     * Busca categorias por nome (LIKE)
+     */
+    public Page<CategoryResponse> searchCategories(String name, Pageable pageable) {
+        return repository
+                .findByNameContainingIgnoreCase(name, pageable)
+                .map(CategoryConverter::convertToCategoryResponse);
+    }
+
+    /**
+     * Deleta todas as categorias e recria as 10 iniciais
+     */
+    public void deleteAllAndResetInitial() {
+        repository.deleteAll();
+        createInitialCategories();
+    }
+
+    /**
+     * Cria as 10 categorias iniciais
+     */
+    private void createInitialCategories() {
+        String[] initialCategories = {
+                "T-Shirts", "Vinyl", "CDs", "MP3", "Books",
+                "Acoustic Guitar", "Electric Guitar", "Bass", "Drums", "Accessories"
+        };
+
+        for (String name : initialCategories) {
+            Category category = Category.builder()
+                    .name(name)
+                    .isRoot(true)
+                    .enabled(true)
+                    .build();
+            repository.save(category);
+        }
+    }
+
+    /**
+     * Exporta categorias em formato CSV
+     */
+    public String exportToCSV() {
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,name\n");
+
+        List<Category> categories = repository.findByIsRootIsTrue();
+        for (Category category : categories) {
+            csv.append(category.getId()).append(",").append(category.getName()).append("\n");
+
+            // Adiciona subcategorias com indentação
+            if (category.getChildren() != null && !category.getChildren().isEmpty()) {
+                addChildrenToCSV(csv, category.getChildren(), "  ");
+            }
+        }
+
+        return csv.toString();
+    }
+
+    /**
+     * Auxilia na indentação de subcategorias no CSV
+     */
+    private void addChildrenToCSV(StringBuilder csv, List<Category> children, String indent) {
+        for (Category child : children) {
+            csv.append(child.getId()).append(",").append(indent).append(child.getName()).append("\n");
+
+            if (child.getChildren() != null && !child.getChildren().isEmpty()) {
+                addChildrenToCSV(csv, child.getChildren(), indent + "  ");
+            }
+        }
+    }
+
 }

@@ -1,0 +1,4 @@
+# Ignorar uploads de usuários (exceto o diretório em si)
+*
+!.gitignore
+

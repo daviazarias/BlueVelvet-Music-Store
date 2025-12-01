@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Registro - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .error-box {
+            background-color: #ffcccc;
+            border: 2px solid #cc0000;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #ccffcc;
+            border: 2px solid #00cc00;
+            color: #155724;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background-color: #cce5ff;
+            border: 2px solid #0066cc;
+            color: #004a99;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <h2>Cadastro de Novo Usuário</h2>
+
+    <!-- Informação -->
+    <div class="info-box">
+        ℹ️ Apenas administradores podem registrar novos usuários no sistema.
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <!-- Mensagem de Sucesso -->
+    <div class="success-box" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <!-- Formulário de Registro -->
+    <form method="POST" th:action="@{/register}">
+        <label>
+            <input name="email" placeholder="E-mail" required type="email">
+        </label>
+        <label>
+            <input name="password" placeholder="Senha (mínimo 8 caracteres)" required type="password">
+        </label>
+
+        <label>
+            <select name="role" required>
+                <option value="">-- Selecione uma função --</option>
+                <option value="ADMINISTRATOR">Administrador</option>
+                <option value="SALES_MANAGER">Gerente de Vendas</option>
+                <option value="EDITOR">Editor</option>
+                <option value="ASSISTANT">Assistente</option>
+                <option value="SHIPPING_MANAGER">Gerente de Envios</option>
+            </select>
+        </label>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 15px;">
+        Já tem uma conta? <a style="color: #333; font-weight: bold;" th:href="@{/login}">Faça login</a>
+    </p>
+</main>
+</body>
+</html>

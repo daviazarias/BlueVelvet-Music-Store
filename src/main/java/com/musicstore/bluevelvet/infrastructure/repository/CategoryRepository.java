@@ -15,4 +15,9 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     List<Category> findByIsRootIsTrue();
     Page<Category> findByIsRootIsTrue(Pageable pageable);
     List<Category> findByParent(Category category, Sort sort);
+
+    /**
+     * Busca categorias por nome contendo (LIKE)
+     */
+    Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

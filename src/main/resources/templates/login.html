@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Login - BlueVelvet Music Store</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .error-box {
+            background-color: #ffcccc;
+            border: 2px solid #cc0000;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #ccffcc;
+            border: 2px solid #00cc00;
+            color: #155724;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <h2>Login</h2>
+
+    <!-- Mensagem de Erro -->
+    <div class="error-box" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <!-- Mensagem de Logout -->
+    <div class="success-box" th:if="${logoutMessage}" th:text="${logoutMessage}"></div>
+
+    <!-- Formulário de Login -->
+    <form method="POST" th:action="@{/login}">
+        <label>
+            <input name="username" placeholder="E-mail" required type="email">
+        </label>
+        <label>
+            <input name="password" placeholder="Senha" required type="password">
+        </label>
+
+        <div class="radio-option">
+            <input id="remember" name="remember-me" type="checkbox" value="on">
+            <label for="remember">Lembrar-se de mim</label>
+        </div>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 15px;">
+        Não tem uma conta? <a style="color: #333; font-weight: bold;" th:href="@{/register}">Cadastre-se aqui</a>
+    </p>
+</main>
+</body>
+</html>

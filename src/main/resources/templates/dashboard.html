@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,74 +8,165 @@
 </head>
 <body>
 <main>
-    <h1>BlueVelvet Music Store</h1>
-    <h2>Product Management</h2>
+    <h1>🎵 BlueVelvet Music Store</h1>
+    <h2>Gerenciamento de Categorias</h2>
 
-    <!--
-    TRABALHO: O nome (Atticus) e papel (Administrator) abaixo foram inseridos
-    hard-coded. Na sua soluçõa o nome e papel exibidos deverão ser obtidos com
-    base no usuário autenticado.
-    Template:  Welcome, {name} {(role)}
-    -->
-    <div>Welcome, Atticus (Administrator)
-        <button id="logoutBtn">Logout</button>
+    <!-- Seção de Boas-vindas com usuário logado -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+        <div>
+            <strong th:text="'Bem-vindo, ' + ${username}"></strong>
+            <span th:text="' (' + ${role} + ')'"></span>
+        </div>
+        <form method="POST" style="margin: 0;" th:action="@{/logout}">
+            <button id="logoutBtn" type="submit">Logout</button>
+        </form>
     </div>
 
+    <!-- Mensagens Flash -->
+    <div style="background-color: #d4edda; border: 2px solid #28a745; color: #155724; padding: 10px; margin-bottom: 10px; border-radius: 5px;"
+         th:if="${successMessage}"
+         th:text="${successMessage}"></div>
+    <div style="background-color: #f8d7da; border: 2px solid #dc3545; color: #721c24; padding: 10px; margin-bottom: 10px; border-radius: 5px;"
+         th:if="${errorMessage}"
+         th:text="${errorMessage}"></div>
+
+
+    <!-- Controles de Categoria -->
     <div id="categoryControls">
-        <button id="resetProductsBtn">Reset Products to Initial State</button>
-        <button id="addProductBtn">Add Product</button>
-        <input type="text" id="searchInput" placeholder="Search products...">
-        <select id="sortSelect">
-            <option value="id" selected>Sort by ID</option>
-            <option value="name">Sort by Name</option>
+        <form method="GET" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;"
+              th:action="@{/dashboard/search}">
+            <button style="width: auto;" type="submit">Buscar</button>
+            <label for="search"></label><input id="search" name="q" placeholder="Buscar por nome de categoria..."
+                                               th:value="${search}" type="text">
+            <label for="sortSelect"></label><select id="sortSelect" name="sort" th:onchange="updateSort()">
+            <option th:selected="${sort == 'name'}" value="name">Ordenar por Nome</option>
+            <option th:selected="${sort == 'id'}" value="id">Ordenar por ID</option>
         </select>
+            <button style="width: auto;" th:onclick="clearSearch()" type="button">Limpar</button>
+        </form>
+
+        <form method="POST" onsubmit="return confirm('Tem certeza que deseja resetar as categorias?');"
+              style="display: inline;"
+              th:action="@{/category/reset}">
+            <button id="resetProductsBtn" type="submit">Reset para Estado Inicial</button>
+        </form>
+
+        <a style="text-decoration: none;" th:href="@{/create-category}">
+            <button id="addCategoryBtn" type="button">Adicionar Categoria</button>
+        </a>
     </div>
 
+    <!-- Tabela de Categorias -->
     <table id="categoryTable">
         <thead>
         <tr>
-            <th>Image</th>
-            <th>Name</th>
+            <th>Imagem</th>
+            <th>Nome</th>
             <th>ID</th>
-            <th>Actions</th>
+            <th>Habilitada</th>
+            <th>Ações</th>
         </tr>
         </thead>
         <tbody id="categoryList">
         <tr th:each="category : ${categories}">
-            <td><img th:src="${category?.image}" alt="" style="width: 100; height: 100px;"></td>
-            <td th:text="${category?.name}"></td>
-            <td th:text="${category?.id}">1</td>
             <td>
-                <button>View</button>
-                <button>Edit</button>
-                <button class="delete-btn">Delete</button>
+                <img style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"
+                     th:alt="${category.name}"
+                     th:if="${category.image}"
+                     th:src="@{'/uploads/' + ${category.image}}">
+                <span th:unless="${category.image}">N/A</span>
+            </td>
+            <td th:text="${category.name}"></td>
+            <td th:text="${category.id}"></td>
+            <td>
+                <span style="color: green; font-weight: bold;" th:if="${category.enabled}">✓ Sim</span>
+                <span style="color: red; font-weight: bold;" th:unless="${category.enabled}">✗ Não</span>
+            </td>
+            <!-- Na tabela de categorias, na coluna de Ações: -->
+            <td>
+                <a style="text-decoration: none;" th:href="@{'/category/' + ${category.id}}">
+                    <button type="button">Visualizar</button>
+                </a>
+                <a style="text-decoration: none;" th:href="@{'/category/' + ${category.id} + '/edit'}">
+                    <button type="button">Editar</button>
+                </a>
+                <form method="POST"
+                      onsubmit="return confirm('Tem certeza que deseja deletar esta categoria?');"
+                      style="display: inline;"
+                      th:action="@{'/category/' + ${category.id} + '/delete'}">
+                    <button class="delete-btn" type="submit">Deletar</button>
+                </form>
             </td>
         </tr>
         </tbody>
     </table>
 
+    <!-- Paginação -->
     <div id="pagination">
-        <button>First...</button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button>...Last</button>
+        <button th:if="${currentPage > 0}" th:onclick="goToPage(0)">Primeira...</button>
+        <button th:if="${currentPage > 0}" th:onclick="goToPage(${currentPage - 1})">Anterior</button>
+
+        <button th:class="${page == currentPage} ? 'active' : ''"
+                th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                th:onclick="goToPage(${page})"
+                th:text="${page + 1}">
+        </button>
+
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToPage(${currentPage + 1})">Próxima</button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToPage(${totalPages - 1})">...Última</button>
     </div>
 </main>
-<script>
-    // JavaScript to show a delete confirmation alert
-    document.addEventListener('DOMContentLoaded', () => {
-        // Select all delete buttons
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        console.log(deleteButtons);
 
-        // Add event listener to each delete button
+<script th:inline="javascript">
+    function resetCategories() {
+        if (confirm('Tem certeza que deseja resetar as categorias para o estado inicial?')) {
+            window.location.href = [[@{/category/reset
+        }]]
+
+        }
+    }
+
+    function clearSearch() {
+        document.querySelector('input[name="q"]').value = '';
+        window.location.href = [[@{/dashboard}]];
+    }
+
+        function updateSort() {
+            const sortValue = document.getElementById('sortSelect').value;
+            const searchValue = document.querySelector('input[name="q"]').value;
+            let url;
+
+            if (searchValue) {
+                url = [[@{/dashboard/search
+            }]]
+                +'?q=' + encodeURIComponent(searchValue) + '&sort=' + sortValue;
+            } else {
+                url = [[@{/dashboard}]] + '?sort=' + sortValue;
+            }
+                window.location.href = url;
+            }
+
+            function goToPage(page) {
+                const sortValue = document.getElementById('sortSelect').value;
+                const searchValue = document.querySelector('input[name="q"]').value;
+                let url;
+
+                if (searchValue) {
+                    url = [[@{/dashboard/search
+                }]]
+                    +'?q=' + encodeURIComponent(searchValue) + '&page=' + page + '&sort=' + sortValue;
+                } else {
+                    url = [[@{/dashboard}]] + '?page=' + page + '&sort=' + sortValue;
+                }
+                    window.location.href = url;
+                }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', (event) => {
-                // Show confirmation alert
-                const confirmation = confirm("Are you sure you want to delete this category?");
+                const confirmation = confirm("Tem certeza que deseja deletar esta categoria?");
                 if (!confirmation) {
-                    // Prevent default action if not confirmed
                     event.preventDefault();
                 }
             });

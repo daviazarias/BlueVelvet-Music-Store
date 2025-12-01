@@ -2,43 +2,54 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Categoria - BlueVelvet Music Store</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Editar Categoria - BlueVelvet Music Store</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <main>
     <div class="go-back">
-        <div class="arrow left"></div>
-        Voltar
+        <button aria-label="Voltar" onclick="history.back()" type="button">
+            <span aria-hidden="true" class="arrow left"></span>
+            Voltar
+        </button>
     </div>
 
     <h1>🎵 BlueVelvet Music Store</h1>
-    <h2>Adicionar Categoria</h2>
+    <h2>Editar Categoria</h2>
 
     <form enctype="multipart/form-data"
           method="POST"
-          th:action="@{/category}"
-          th:object="${category}">
+          th:action="@{'/category/' + ${category.id}}">
 
         <label for="name">Nome da Categoria</label>
-        <input id="name" name="name" placeholder="Nome da Categoria" required th:field="*{name}" type="text">
+        <input id="name" name="name" placeholder="Nome da Categoria" required th:value="${category.name}" type="text">
 
         <label for="imageFile">Imagem</label>
         <input accept="image/*" id="imageFile" name="imageFile" onchange="previewImage(event)" type="file">
 
-        <!-- Preview da imagem selecionada -->
+        <!-- Preview da imagem atual -->
+        <div style="margin: 10px 0;" th:if="${category.image}">
+            <small>Imagem atual:</small><br>
+            <img style="max-width: 200px; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; padding: 5px;"
+                 th:alt="${category.name}"
+                 th:src="@{'/uploads/' + ${category.image}}">
+        </div>
+
+        <!-- Preview da nova imagem -->
         <div id="imagePreview" style="margin: 10px 0; display: none;">
-            <small>Preview da imagem:</small><br>
+            <small>Nova imagem:</small><br>
             <img alt="Preview" id="preview" src=""
                  style="max-width: 200px; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; padding: 5px;">
         </div>
 
         <label for="parentId">Categoria Pai (Deixe em branco para categoria raiz)</label>
-        <select id="parentId" name="parentId" th:field="*{parentId}">
+        <select id="parentId" name="parentId">
             <option value="">-- Nenhuma (Raiz) --</option>
             <option th:each="parent : ${parentCategories}"
+                    th:selected="${category.parentId == parent.id}"
                     th:text="${parent.name}"
+                    th:unless="${parent.id == category.id}"
                     th:value="${parent.id}">
             </option>
         </select>
@@ -47,18 +58,18 @@
             <legend>Habilitada</legend>
 
             <div class="radio-option">
-                <input id="yes" name="enabled" th:checked="*{enabled}" th:field="*{enabled}" type="radio" value="true">
+                <input id="yes" name="enabled" th:checked="${category.enabled == true}" type="radio" value="true">
                 <label for="yes">Sim</label>
             </div>
 
             <div class="radio-option">
-                <input id="no" name="enabled" th:checked="!*{enabled}" th:field="*{enabled}" type="radio" value="false">
+                <input id="no" name="enabled" th:checked="${category.enabled == false}" type="radio" value="false">
                 <label for="no">Não</label>
             </div>
         </fieldset>
 
         <div class="bottom-buttons">
-            <button type="submit">Salvar</button>
+            <button type="submit">Atualizar</button>
             <button onclick="history.back()" type="button">Cancelar</button>
         </div>
 
