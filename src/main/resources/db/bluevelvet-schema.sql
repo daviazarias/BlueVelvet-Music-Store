@@ -7,7 +7,7 @@ USE bluevelvet;
 -- ========================================
 -- TABELA DE USUÁRIOS
 -- ========================================
-CREATE TABLE IF NOT EXISTS user
+CREATE TABLE IF NOT EXISTS `user`
 (
     id         BIGINT PRIMARY KEY AUTO_INCREMENT,
     email      VARCHAR(255)                                                                       NOT NULL UNIQUE,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS product
 -- ========================================
 -- ÍNDICES
 -- ========================================
-CREATE INDEX idx_user_email ON user (email);
+CREATE INDEX idx_user_email ON `user` (email);
 CREATE INDEX idx_category_name ON category (name);
 CREATE INDEX idx_category_parent_id ON category (parent_id);
 CREATE INDEX idx_category_enabled ON category (enabled);
@@ -73,7 +73,7 @@ CREATE INDEX idx_category_enabled ON category (enabled);
 -- ========================================
 
 -- Usuário Admin Initial (password: 123456789)
-INSERT INTO user (email, name, password, role)
+INSERT INTO `user` (email, name, password, role)
 VALUES ('admin@bluevelvet.com', 'Administrador', '$2a$10$slYQmyNdGzin7olVN3p5aOYkN/nrsFtoWj9vGXV84EfiVLXrT2qXa',
         'ADMINISTRATOR')
 ON DUPLICATE KEY UPDATE email=email;

@@ -5,10 +5,13 @@ import com.musicstore.bluevelvet.api.response.CategoryResponse;
 import com.musicstore.bluevelvet.domain.converter.CategoryConverter;
 import com.musicstore.bluevelvet.domain.exception.CategoryNotFoundException;
 import com.musicstore.bluevelvet.infrastructure.entity.Category;
+import com.musicstore.bluevelvet.infrastructure.entity.Product;
 import com.musicstore.bluevelvet.infrastructure.repository.CategoryRepository;
+import com.musicstore.bluevelvet.infrastructure.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class CategoryService {
 
     public static final String UNABLE_TO_FIND_A_CATEGORY_WITH_ID_D = "Unable to find a category with id %d";
     private final CategoryRepository repository;
+    private final ProductRepository productRepository;
 
     public CategoryResponse findById(Long id) {
 
@@ -63,6 +67,13 @@ public class CategoryService {
         // Validar se a categoria tem subcategorias
         if (category.getChildren() != null && !category.getChildren().isEmpty()) {
             throw new IllegalArgumentException("Não é possível deletar uma categoria que possui subcategorias.");
+        }
+
+        // Validar se a categoria tem produtos
+        Page<Product> products = productRepository.findByCategory(category, PageRequest.of(0, 1));
+
+        if (!products.isEmpty()) {
+            throw new IllegalArgumentException("Não é possível deletar uma categoria que possui produtos associados.");
         }
 
         repository.deleteById(id);

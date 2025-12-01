@@ -24,81 +24,88 @@
     <form method="POST"
           th:action="@{${viewMode == 'edit' ? '/category/' + category.id : '/category'}}"
           th:object="${category}"
-          enctype="multipart/form-data">
+          enctype="multipart/form-data"
+          class="category-form">
 
         <!-- ID (apenas visualização) -->
-        <div th:if="${viewMode == 'view' or viewMode == 'edit'}">
+        <div class="form-field" th:if="${viewMode == 'view' or viewMode == 'edit'}">
             <label for="id">ID</label>
             <input type="text" id="id" th:value="${category.id}" disabled class="disabled-field">
         </div>
 
         <!-- Nome da Categoria -->
-        <label for="name">Nome da Categoria</label>
-        <input type="text"
-               id="name"
-               name="name"
-               placeholder="Nome da Categoria"
-               th:value="${category.name}"
-               th:field="*{name}"
-               th:disabled="${viewMode == 'view'}"
-               required>
+        <div class="form-field">
+            <label for="name">Nome da Categoria</label>
+            <input type="text"
+                   id="name"
+                   name="name"
+                   placeholder="Nome da Categoria"
+                   th:value="${category.name}"
+                   th:field="*{name}"
+                   th:disabled="${viewMode == 'view'}"
+                   required>
+        </div>
 
         <!-- Imagem -->
-        <label for="imageFile">Imagem</label>
-        <div th:if="${viewMode != 'view'}">
-            <input type="file"
-                   id="imageFile"
-                   name="imageFile"
-                   accept="image/*"
-                   onchange="previewImage(event)">
-        </div>
-        <div th:if="${viewMode == 'view'}">
-            <input type="text" value="(Upload desabilitado no modo visualização)" disabled class="disabled-field">
-        </div>
+        <div class="form-field">
+            <label for="imageFile">Imagem</label>
+            <div th:if="${viewMode != 'view'}">
+                <input type="file"
+                       id="imageFile"
+                       name="imageFile"
+                       accept="image/*"
+                       onchange="previewImage(event)">
+            </div>
+            <div th:if="${viewMode == 'view'}">
+                <input type="text" value="(Upload desabilitado no modo visualização)" disabled class="disabled-field">
+            </div>
 
-        <!-- Preview da imagem atual (edit e view) -->
-        <div th:if="${(viewMode == 'edit' or viewMode == 'view') and category.image != null and !#strings.isEmpty(category.image)}"
-             class="image-container">
-            <small>Imagem atual:</small><br>
-            <img th:src="@{'/uploads/' + ${category.image}}" alt="Imagem atual" class="image-preview">
-        </div>
+            <!-- Preview da imagem atual (edit e view) -->
+            <div th:if="${(viewMode == 'edit' or viewMode == 'view') and category.image != null and !#strings.isEmpty(category.image)}"
+                 class="image-container">
+                <small>Imagem atual:</small><br>
+                <img th:src="@{'/uploads/' + ${category.image}}" alt="Imagem atual" class="image-preview">
+            </div>
 
-        <!-- Preview da nova imagem (create e edit) -->
-        <div th:if="${viewMode != 'view'}" id="imagePreview" class="image-container" style="display: none;">
-            <small>Preview da nova imagem:</small><br>
-            <img id="preview" src="" alt="Preview" class="image-preview">
-        </div>
+            <!-- Preview da nova imagem (create e edit) -->
+            <div th:if="${viewMode != 'view'}" id="imagePreview" class="image-container" style="display: none;">
+                <small>Preview da nova imagem:</small><br>
+                <img id="preview" src="" alt="Preview" class="image-preview">
+            </div>
 
-        <!-- Sem imagem (view) -->
-        <div th:if="${viewMode == 'view' and (category.image == null or #strings.isEmpty(category.image))}"
-             class="no-image-message">
-            <small>Nenhuma imagem cadastrada</small>
+            <!-- Sem imagem (view) -->
+            <div th:if="${viewMode == 'view' and (category.image == null or #strings.isEmpty(category.image))}"
+                 class="no-image-message">
+                <small>Nenhuma imagem cadastrada</small>
+            </div>
         </div>
 
         <!-- Categoria Pai -->
-        <label for="parentId">Categoria Pai</label>
-        <div th:if="${viewMode == 'view'}">
-            <input type="text"
-                   th:value="${parentCategory != null ? parentCategory.name : 'Nenhuma (Categoria Raiz)'}"
-                   disabled
-                   class="disabled-field">
-        </div>
-        <div th:if="${viewMode != 'view'}">
-            <select id="parentId"
-                    name="parentId"
-                    th:field="*{parentId}"
-                    th:disabled="${viewMode == 'view'}">
-                <option value="">-- Nenhuma (Raiz) --</option>
-                <option th:each="parent : ${parentCategories}"
-                        th:value="${parent.id}"
-                        th:text="${parent.name}"
-                        th:unless="${viewMode == 'edit' and parent.id == category.id}">
-                </option>
-            </select>
+        <div class="form-field">
+            <label for="parentId">Categoria Pai</label>
+            <div th:if="${viewMode == 'view'}">
+                <input type="text"
+                       th:value="${parentCategory != null ? parentCategory.name : 'Nenhuma (Categoria Raiz)'}"
+                       disabled
+                       class="disabled-field">
+            </div>
+            <div th:if="${viewMode != 'view'}">
+                <select id="parentId"
+                        name="parentId"
+                        th:field="*{parentId}"
+                        th:disabled="${viewMode == 'view'}">
+                    <option value="">-- Nenhuma (Raiz) --</option>
+                    <option th:each="parent : ${parentCategories}"
+                            th:value="${parent.id}"
+                            th:text="${parent.name}"
+                            th:unless="${viewMode == 'edit' and parent.id == category.id}">
+                    </option>
+                </select>
+            </div>
         </div>
 
         <!-- Tipo (apenas visualização) -->
-        <div th:if="${viewMode == 'view'}">
+        <div class="form-field" th:if="${viewMode == 'view'}">
             <label>Tipo</label>
             <input type="text"
                    th:value="${category.isRoot ? '📁 Categoria Raiz' : '📂 Subcategoria'}"

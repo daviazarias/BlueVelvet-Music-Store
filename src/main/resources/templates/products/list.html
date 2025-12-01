@@ -22,11 +22,11 @@
             <button class="button-auto" type="submit">Buscar</button>
             <label for="search"></label><input id="search" name="search" placeholder="Buscar por nome de produto..."
                                                th:value="${search}" type="text">
-            <label for="sortSelect"></label><select id="sortSelect" name="sort" th:onchange="updateSort()">
+            <label for="sortSelect"></label><select id="sortSelect" name="sort" onchange="updateProductSort()">
             <option th:selected="${sort == 'name'}" value="name">Ordenar por Nome</option>
             <option th:selected="${sort == 'id'}" value="id">Ordenar por ID</option>
         </select>
-            <button class="button-auto" th:onclick="clearSearch()" type="button">Limpar</button>
+            <button class="button-auto" onclick="clearProductSearch()" type="button">Limpar</button>
         </form>
 
         <a class="link-clean" th:href="@{/products/create}">
@@ -77,20 +77,19 @@
     </table>
 
     <!-- Paginação -->
-    <div id="pagination">
-        <button th:if="${currentPage > 0}" th:onclick="goToProductPage(0)">Primeira...</button>
-        <button th:if="${currentPage > 0}" th:onclick="goToProductPage(${currentPage - 1})">Anterior</button>
+    <div id="pagination" th:if="${totalPages > 0}">
+        <button th:if="${currentPage > 0}" th:onclick="|goToProductPage(0)|" type="button">Primeira</button>
+        <button th:if="${currentPage > 0}" th:onclick="|goToProductPage(${currentPage - 1})|" type="button">Anterior</button>
 
         <button th:class="${page == currentPage} ? 'active' : ''"
                 th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
-                th:onclick="goToProductPage(${page})"
-                th:text="${page + 1}">
+                th:onclick="|goToProductPage(${page})|"
+                th:text="${page + 1}"
+                type="button">
         </button>
 
-        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToProductPage(${currentPage + 1})">Próxima
-        </button>
-        <button th:if="${currentPage < totalPages - 1}" th:onclick="goToProductPage(${totalPages - 1})">...Última
-        </button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="|goToProductPage(${currentPage + 1})|" type="button">Próxima</button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="|goToProductPage(${totalPages - 1})|" type="button">Última</button>
     </div>
 
     <!-- Link para voltar -->
@@ -98,25 +97,5 @@
         <a href="/dashboard">← Voltar para Dashboard</a>
     </div>
 </main>
-
-<script>
-    function goToProductPage(page) {
-        const search = new URLSearchParams(window.location.search).get('search');
-        const sort = new URLSearchParams(window.location.search).get('sort');
-        let url = '/products?page=' + page;
-        if (sort) url += '&sort=' + sort;
-        if (search) url += '&search=' + search;
-        window.location.href = url;
-    }
-
-    function updateSort() {
-        const sort = document.getElementById('sortSelect').value;
-        window.location.href = '/products?sort=' + sort;
-    }
-
-    function clearSearch() {
-        window.location.href = '/products';
-    }
-</script>
 </body>
 </html>

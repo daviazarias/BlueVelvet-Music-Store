@@ -82,3 +82,43 @@ function switchSort() {
     window.location.href = '/list?sort=' + sortValue;
 }
 
+// ==========================================
+// Produtos - Paginação e Controles
+// ==========================================
+function goToProductPage(page) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const search = urlParams.get('search') || '';
+    const sort = urlParams.get('sort') || 'name';
+
+    let url = '/products?page=' + page;
+    if (sort) {
+        url += '&sort=' + sort;
+    }
+    if (search) {
+        url += '&search=' + encodeURIComponent(search);
+    }
+
+    window.location.href = url;
+}
+
+function updateProductSort() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const search = urlParams.get('search') || '';
+    const sort = document.getElementById('sortSelect').value;
+    const page = urlParams.get('page') || '0';
+
+    let url = '/products?page=' + page + '&sort=' + sort;
+    if (search) {
+        url += '&search=' + encodeURIComponent(search);
+    }
+
+    window.location.href = url;
+}
+
+function clearProductSearch() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sort = urlParams.get('sort') || 'name';
+
+    window.location.href = '/products?sort=' + sort;
+}
+

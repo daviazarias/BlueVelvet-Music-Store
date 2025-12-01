@@ -31,10 +31,6 @@ public class ThymeleafController {
     private final CategoryService service;
     private final FileStorageService fileStorageService;
 
-    @GetMapping("/")
-    public String getHomePage(){
-        return "redirect:/shop";
-    }
 
     // ============== DASHBOARD ==============
 

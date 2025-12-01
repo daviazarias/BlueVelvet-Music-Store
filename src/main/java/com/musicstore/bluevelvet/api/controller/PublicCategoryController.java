@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.List;
  * US-2100: List products within a category for the online shopper
  */
 @Controller
-@RequestMapping("/shop")
 @RequiredArgsConstructor
 public class PublicCategoryController {
 
@@ -33,9 +31,17 @@ public class PublicCategoryController {
     private final ProductService productService;
 
     /**
+     * Redireciona a raiz para a loja
+     */
+    @GetMapping("/")
+    public String redirectToShop() {
+        return "redirect:/shop";
+    }
+
+    /**
      * Página inicial da loja - lista categorias raiz habilitadas
      */
-    @GetMapping
+    @GetMapping("/shop")
     public String shopHome(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             Model model
@@ -57,7 +63,7 @@ public class PublicCategoryController {
      * Mostra breadcrumb, subcategorias e produtos ordenados por nome
      * US-2100: List products within a category for the online shopper
      */
-    @GetMapping("/category/{id}")
+    @GetMapping("/shop/category/{id}")
     public String viewCategoryProducts(
             @PathVariable Long id,
             @RequestParam(name = "page", defaultValue = "0") Integer page,

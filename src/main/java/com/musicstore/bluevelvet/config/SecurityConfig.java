@@ -34,10 +34,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        // ← DEBUG: Endpoints de debug (REMOVER EM PRODUÇÃO)
-                        .requestMatchers("/api/debug/**").permitAll()
-                        // ← PASSWORD RESET: Apenas para desenvolvimento (REMOVER EM PRODUÇÃO)
-                        .requestMatchers("/api/password-reset/**").permitAll()
                         // ← NOVO: Rotas de autenticação públicas
                         .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/uploads/**", "/shop/**").permitAll()
                         // ← NOVO: Dashboard requer autenticação
