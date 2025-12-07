@@ -90,7 +90,7 @@ public class PublicCategoryController {
             }
 
             // Buscar produtos habilitados da categoria
-            Page<ProductResponse> products = productService.findByCategoryAndEnabled(id,
+            Page<ProductResponse> products = productService.findByCategoryAndSubcategories(id,
                     PageRequest.of(page, PRODUCT_PAGE_SIZE, Sort.by("name").ascending()));
 
             model.addAttribute("category", category);

@@ -47,6 +47,13 @@ public class ProductService {
                 .map(ProductConverter::convertToProductResponse);
     }
 
+    public Page<ProductResponse> findByCategoryAndSubcategories(Long categoryId, Pageable pageable) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Categoria não encontrada com id: " + categoryId));
+        return productRepository.findByCategoryAndSubcategories(category.getId(), pageable)
+                .map(ProductConverter::convertToProductResponse);
+    }
+
     public Page<ProductResponse> searchByName(String name, Pageable pageable) {
         return productRepository.findByNameContainingIgnoreCase(name, pageable)
                 .map(ProductConverter::convertToProductResponse);
