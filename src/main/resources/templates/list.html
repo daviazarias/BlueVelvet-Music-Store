@@ -21,12 +21,18 @@
         <button id="logoutBtn">Logout</button>
     </div>
 
-    <div id="categoryControls">
-        <button id="addCategoryBtn" onclick="window.location='/create-category'">Add Category</button>
-<!--    <input type="text" id="searchInput" placeholder="Search categories...">  -->
+    <div id="categoryControls" class="search-form">
+        <button id="addCategoryBtn" onclick="window.location='/create-category'">Criar Categoria</button>
+
         <select id="sortSelect" th:value="*{sort}" onChange="switchSort()">
-            <option th:value="name" th:selected="${sort == 'name'}">Sort by Name</option>
-            <option th:value="id" th:selected="${sort == 'id'}">Sort by ID</option>
+            <option th:value="name" th:selected="${sort == 'name'}">Ordenar por Nome</option>
+            <option th:value="id" th:selected="${sort == 'id'}">Ordenar por ID</option>
+        </select>
+
+        <label for="ordSelect"></label>
+        <select id="ordSelect" th:value="*{asc}" th:onchange="switchSort()">
+            <option th:selected="${asc}" th:value=true>Ordenar ascendente</option>
+            <option th:selected="${!asc}" th:value=false>Ordenar descendente</option>
         </select>
     </div>
 
@@ -63,8 +69,9 @@
 <script th:inline="javascript">
         function switchSort() {
             const selectedSort = document.getElementById("sortSelect").value;
+            const selectedOrd = document.getElementById("ordSelect").value;
             if(selectedSort){
-                window.location.href = [[@{/list?&sort=}]] + selectedSort;
+                window.location.href = [[@{/list?sort=}]] + selectedSort + '&asc=' + selectedOrd;
             }
         }
 </script>

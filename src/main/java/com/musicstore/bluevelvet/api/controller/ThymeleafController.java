@@ -4,6 +4,7 @@ import com.musicstore.bluevelvet.api.request.CategoryRequest;
 import com.musicstore.bluevelvet.api.response.CategoryResponse;
 import com.musicstore.bluevelvet.domain.service.CategoryService;
 import com.musicstore.bluevelvet.domain.service.FileStorageService;
+import jakarta.persistence.criteria.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -119,14 +120,17 @@ public class ThymeleafController {
     public String categoriesList(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "sort", defaultValue = "name") String sort,
+            @RequestParam(name = "asc", defaultValue = "true") Boolean asc,
             Model model
     ) {
         Page<CategoryResponse> responsePage = service.findAllRootsWithOrderedChildren(
-                PageRequest.of(page, DEFAULT_LIST_PAGE_SIZE, Sort.by(sort))
+                PageRequest.of(page, DEFAULT_LIST_PAGE_SIZE,
+                        Sort.by(asc ? Sort.Order.asc(sort) : Sort.Order.desc(sort)))
         );
 
         model.addAttribute(CATEGORIES, responsePage);
         model.addAttribute("sort", sort);
+        model.addAttribute("asc", asc);
         return "list";
     }
 
