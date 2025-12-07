@@ -25,7 +25,7 @@ public class ThymeleafController {
 
     public static final String CATEGORY = "category";
     public static final String REDIRECT_DASHBOARD = "redirect:/dashboard";
-    public static final String REDIRECT_AUTHORIZATION_ERROR = "redirect:/login";
+    public static final String REDIRECT_AUTHORIZATION_ERROR = "redirect:/shop";
     public static final String SUCCESS_MESSAGE = "successMessage";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String CATEGORIES = "categories";
