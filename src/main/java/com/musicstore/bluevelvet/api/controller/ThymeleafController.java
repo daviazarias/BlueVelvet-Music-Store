@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +25,17 @@ public class ThymeleafController {
 
     public static final String CATEGORY = "category";
     public static final String REDIRECT_DASHBOARD = "redirect:/dashboard";
+    public static final String REDIRECT_AUTHENTICATION_ERROR = "redirect:/login";
     public static final String SUCCESS_MESSAGE = "successMessage";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String CATEGORIES = "categories";
+
+    public static final String ADMIN = "ROLE_ADMINISTRATOR";
+    public static final String EDITOR = "ROLE_EDITOR";
+    public static final String SHIPPER = "ROLE_SHIPPING_MANAGER";
+    public static final String SALESPERSON = "ROLE_SALES_MANAGER";
+    public static final String ASSISTANT = "ROLE_ASSISTANT";
+
     private static final Integer DEFAULT_DASHBOARD_PAGE_SIZE = 10;  // US-2032: 10 categorias por página no dashboard
     private static final Integer DEFAULT_LIST_PAGE_SIZE = 5;      // US-0907: 5 categorias raiz por página na listagem
     private final CategoryService service;
@@ -43,6 +53,10 @@ public class ThymeleafController {
             Model model,
             Authentication authentication
     ) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, SALESPERSON, SHIPPER)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         // Adiciona informações do usuário autenticado
         addUserInformations(model, authentication);
 
@@ -71,6 +85,10 @@ public class ThymeleafController {
             Model model,
             Authentication authentication
     ) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_DASHBOARD;
+
         if (authentication != null) {
             model.addAttribute("username", authentication.getName());
             String role = authentication.getAuthorities().stream()
@@ -110,6 +128,10 @@ public class ThymeleafController {
             Model model,
             Authentication authentication
     ) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         addUserInformations(model, authentication);
 
         Page<CategoryResponse> responsePage = service.findAllRootsWithOrderedChildren(
@@ -125,27 +147,14 @@ public class ThymeleafController {
         return "list";
     }
 
-    private void addUserInformations(Model model, Authentication authentication) {
-        if (authentication != null) {
-            String userName = "Usuário";
-            if (authentication.getPrincipal() instanceof com.musicstore.bluevelvet.domain.service.CustomUserDetails) {
-                com.musicstore.bluevelvet.domain.service.CustomUserDetails userDetails =
-                        (com.musicstore.bluevelvet.domain.service.CustomUserDetails) authentication.getPrincipal();
-                userName = userDetails.getName();
-            }
-            model.addAttribute("userName", userName);
-            String role = authentication.getAuthorities().stream()
-                    .map(Object::toString)
-                    .findFirst()
-                    .orElse("USER");
-            model.addAttribute("role", role.replace("ROLE_", ""));
-        }
-    }
-
     // ============== CREATE CATEGORY ==============
 
     @GetMapping("/create-category")
-    public String createCategoryForm(Model model) {
+    public String createCategoryForm(Model model, Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         List<CategoryResponse> responseList = service.findAllRoots();
         model.addAttribute("parentCategories", responseList);
         model.addAttribute("category", new CategoryRequest());
@@ -156,7 +165,12 @@ public class ThymeleafController {
     @PostMapping("/category")
     public String createCategory(@ModelAttribute CategoryRequest request,
                                  @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         try {
             // Processar upload de imagem
             if (imageFile != null && !imageFile.isEmpty()) {
@@ -177,7 +191,14 @@ public class ThymeleafController {
     // ============== EDIT CATEGORY ==============
 
     @GetMapping("/category/{id}/edit")
-    public String editCategoryForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String editCategoryForm(@PathVariable Long id,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes,
+                                   Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         try {
             CategoryResponse category = service.findById(id);
             List<CategoryResponse> parentCategories = service.findAllRoots();
@@ -207,7 +228,12 @@ public class ThymeleafController {
     public String updateCategory(@PathVariable Long id,
                                  @ModelAttribute CategoryRequest request,
                                  @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         try {
             // Processar upload de nova imagem
             if (imageFile != null && !imageFile.isEmpty()) {
@@ -234,7 +260,14 @@ public class ThymeleafController {
     // ============== VIEW CATEGORY ==============
 
     @GetMapping("/category/{id}")
-    public String viewCategory(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String viewCategory(@PathVariable Long id,
+                               Model model,
+                               RedirectAttributes redirectAttributes,
+                               Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         try {
             CategoryResponse category = service.findById(id);
             List<CategoryResponse> parentCategories = service.findAllRoots();
@@ -267,7 +300,13 @@ public class ThymeleafController {
     // ============== DELETE CATEGORY ==============
 
     @PostMapping("/category/{id}/delete")
-    public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteCategory(@PathVariable Long id,
+                                 RedirectAttributes redirectAttributes,
+                                 Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHENTICATION_ERROR;
+
         try {
             service.deleteById(id);
             redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE, "Categoria deletada com sucesso!");
@@ -295,7 +334,11 @@ public class ThymeleafController {
     // ============== EXPORT CSV ==============
 
     @GetMapping("/category/export/csv")
-    public org.springframework.http.ResponseEntity<byte[]> exportCategoriesCSV() {
+    public org.springframework.http.ResponseEntity<byte[]> exportCategoriesCSV(Authentication authentication) {
+
+        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         try {
             String csvContent = service.exportToCSV();
             String fileName = service.generateCSVFileName();
@@ -309,5 +352,27 @@ public class ThymeleafController {
         } catch (Exception e) {
             return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private void addUserInformations(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String userName = "Usuário";
+            if (authentication.getPrincipal() instanceof com.musicstore.bluevelvet.domain.service.CustomUserDetails) {
+                com.musicstore.bluevelvet.domain.service.CustomUserDetails userDetails =
+                        (com.musicstore.bluevelvet.domain.service.CustomUserDetails) authentication.getPrincipal();
+                userName = userDetails.getName();
+            }
+            model.addAttribute("userName", userName);
+            String role = authentication.getAuthorities().stream()
+                    .map(Object::toString)
+                    .findFirst()
+                    .orElse("USER");
+            model.addAttribute("role", role.replace("ROLE_", ""));
+        }
+    }
+
+    private Boolean authenticateUser(Authentication authentication, List<String> allowedRoles){
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> allowedRoles.contains(a.getAuthority()));
     }
 }
