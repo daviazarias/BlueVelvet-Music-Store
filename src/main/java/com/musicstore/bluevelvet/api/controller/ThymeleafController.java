@@ -38,6 +38,7 @@ public class ThymeleafController {
     public String categoriesDashboard(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "sort", defaultValue = "name") String sort,
+            @RequestParam(name = "asc", defaultValue = "true") Boolean asc,
             @RequestParam(name = "search", required = false) String search,
             Model model,
             Authentication authentication
@@ -59,13 +60,15 @@ public class ThymeleafController {
         }
 
         Page<CategoryResponse> responsePage = service.findAllRoots(
-                PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE, Sort.by(sort)));
+                PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE,
+                        Sort.by(asc ? Sort.Order.asc(sort) : Sort.Order.desc(sort))));
 
         model.addAttribute(CATEGORIES, responsePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", responsePage.getTotalPages());
         model.addAttribute("sort", sort);
         model.addAttribute("search", search);
+        model.addAttribute("asc", asc);
 
         return "dashboard";
     }

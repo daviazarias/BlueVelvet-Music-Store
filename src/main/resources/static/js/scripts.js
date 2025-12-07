@@ -35,13 +35,15 @@ function clearSearch() {
 
 function updateSort() {
     const sortValue = document.getElementById('sortSelect').value;
+    const ordValue = document.getElementById('ordSelect').value;
     const searchValue = document.querySelector('input[name="q"]')?.value || '';
     let url;
 
     if (searchValue) {
-        url = '/dashboard/search?q=' + encodeURIComponent(searchValue) + '&sort=' + sortValue;
+        url = '/dashboard/search?q=' + encodeURIComponent(searchValue) +
+            '&sort=' + sortValue + '&asc=' + ordValue;
     } else {
-        url = '/dashboard?sort=' + sortValue;
+        url = '/dashboard?sort=' + sortValue + '&asc=' + ordValue;
     }
     window.location.href = url;
 }

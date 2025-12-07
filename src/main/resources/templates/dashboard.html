@@ -42,15 +42,24 @@
 
     <!-- Controles de Categoria -->
     <div id="categoryControls">
-        <form method="GET" class="search-form"
-              th:action="@{/dashboard/search}">
+        <form method="GET" class="search-form" th:action="@{/dashboard/search}">
             <button class="button-auto" type="submit">Buscar</button>
-            <label for="search"></label><input id="search" name="q" placeholder="Buscar por nome de categoria..."
-                                               th:value="${search}" type="text">
-            <label for="sortSelect"></label><select id="sortSelect" name="sort" th:onchange="updateSort()">
-            <option th:selected="${sort == 'name'}" value="name">Ordenar por Nome</option>
-            <option th:selected="${sort == 'id'}" value="id">Ordenar por ID</option>
-        </select>
+
+            <label for="search"></label>
+            <input id="search" name="q" placeholder="Buscar por nome de categoria..." th:value="${search}" type="text">
+
+            <label for="sortSelect"></label>
+            <select id="sortSelect" name="sort" th:onchange="updateSort()">
+                <option th:selected="${sort == 'name'}" value="name">Ordenar por Nome</option>
+                <option th:selected="${sort == 'id'}" value="id">Ordenar por ID</option>
+            </select>
+
+            <label for="ordSelect"></label>
+            <select id="ordSelect" name="asc" th:onchange="updateSort()">
+                <option th:selected="${asc}" th:value=true>Ordenar ascendente</option>
+                <option th:selected="${!asc}" th:value=false>Ordenar descendente</option>
+            </select>
+
             <button class="button-auto" th:onclick="clearSearch()" type="button">Limpar</button>
         </form>
 
