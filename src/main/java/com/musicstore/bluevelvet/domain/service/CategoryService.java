@@ -33,6 +33,14 @@ public class CategoryService {
         return CategoryConverter.convertToCategoryResponse(category);
     }
 
+    public List<CategoryResponse> findAll(){
+        return repository
+                .findAll()
+                .stream()
+                .map(CategoryConverter::convertToCategoryResponse)
+                .toList();
+    }
+
     public Page<CategoryResponse> findAllRoots(Pageable pageable){
         return repository
                 .findAll(pageable)

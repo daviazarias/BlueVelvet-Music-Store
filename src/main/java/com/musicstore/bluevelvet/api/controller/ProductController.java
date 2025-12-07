@@ -54,7 +54,7 @@ public class ProductController {
     @GetMapping("/create")
     public String createProductForm(Model model) {
         model.addAttribute("product", new ProductRequest());
-        model.addAttribute("categories", categoryService.findAllRoots());
+        model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("viewMode", "create");
         return "products/form";
     }
@@ -85,7 +85,7 @@ public class ProductController {
         try {
             ProductResponse product = productService.findById(id);
             model.addAttribute("product", product);
-            model.addAttribute("categories", categoryService.findAllRoots());
+            model.addAttribute("categories", categoryService.findAll());
             model.addAttribute("viewMode", "edit");
             return "products/form";
         } catch (Exception e) {
