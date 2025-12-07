@@ -25,7 +25,7 @@ public class ThymeleafController {
 
     public static final String CATEGORY = "category";
     public static final String REDIRECT_DASHBOARD = "redirect:/dashboard";
-    public static final String REDIRECT_AUTHENTICATION_ERROR = "redirect:/login";
+    public static final String REDIRECT_AUTHORIZATION_ERROR = "redirect:/login";
     public static final String SUCCESS_MESSAGE = "successMessage";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String CATEGORIES = "categories";
@@ -54,8 +54,8 @@ public class ThymeleafController {
             Authentication authentication
     ) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, SALESPERSON, SHIPPER)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, SALESPERSON, SHIPPER)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         // Adiciona informações do usuário autenticado
         addUserInformations(model, authentication);
@@ -86,7 +86,7 @@ public class ThymeleafController {
             Authentication authentication
     ) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, EDITOR)))
             return REDIRECT_DASHBOARD;
 
         if (authentication != null) {
@@ -129,8 +129,8 @@ public class ThymeleafController {
             Authentication authentication
     ) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         addUserInformations(model, authentication);
 
@@ -152,8 +152,8 @@ public class ThymeleafController {
     @GetMapping("/create-category")
     public String createCategoryForm(Model model, Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         List<CategoryResponse> responseList = service.findAllRoots();
         model.addAttribute("parentCategories", responseList);
@@ -168,8 +168,8 @@ public class ThymeleafController {
                                  RedirectAttributes redirectAttributes,
                                  Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         try {
             // Processar upload de imagem
@@ -196,8 +196,8 @@ public class ThymeleafController {
                                    RedirectAttributes redirectAttributes,
                                    Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         try {
             CategoryResponse category = service.findById(id);
@@ -231,8 +231,8 @@ public class ThymeleafController {
                                  RedirectAttributes redirectAttributes,
                                  Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         try {
             // Processar upload de nova imagem
@@ -265,8 +265,8 @@ public class ThymeleafController {
                                RedirectAttributes redirectAttributes,
                                Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         try {
             CategoryResponse category = service.findById(id);
@@ -304,8 +304,8 @@ public class ThymeleafController {
                                  RedirectAttributes redirectAttributes,
                                  Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
-            return REDIRECT_AUTHENTICATION_ERROR;
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, EDITOR)))
+            return REDIRECT_AUTHORIZATION_ERROR;
 
         try {
             service.deleteById(id);
@@ -336,7 +336,7 @@ public class ThymeleafController {
     @GetMapping("/category/export/csv")
     public org.springframework.http.ResponseEntity<byte[]> exportCategoriesCSV(Authentication authentication) {
 
-        if(!authenticateUser(authentication, List.of(ADMIN, EDITOR)))
+        if(!checkUserAuthorization(authentication, List.of(ADMIN, EDITOR)))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         try {
@@ -371,7 +371,7 @@ public class ThymeleafController {
         }
     }
 
-    private Boolean authenticateUser(Authentication authentication, List<String> allowedRoles){
+    private Boolean checkUserAuthorization(Authentication authentication, List<String> allowedRoles){
         return authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> allowedRoles.contains(a.getAuthority()));
     }
