@@ -824,6 +824,11 @@ fieldset:disabled {
     width: 100%;
 }
 
+#categoryTable ul {
+    list-style-type: none;
+    margin-left: 30px;
+}
+
 /* Responsividade para formulários */
 @media (max-width: 768px) {
     .category-form {

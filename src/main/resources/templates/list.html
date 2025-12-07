@@ -11,14 +11,11 @@
     <h1>BlueVelvet Music Store</h1>
     <h2>List Categories</h2>
 
-    <!--
-    TRABALHO: O nome (Atticus) e papel (Administrator) abaixo foram inseridos
-    hard-coded. Na sua soluçõa o nome e papel exibidos deverão ser obtidos com
-    base no usuário autenticado.
-    Template:  Welcome, {name} {(role)}
-    -->
-    <div>Welcome, Atticus (Administrator)
-        <button id="logoutBtn">Logout</button>
+    <div class="welcome-container">
+        <div>
+            <strong th:text="'Bem-vindo, ' + ${userName}"></strong>
+            <span th:text="' (' + ${role} + ')'"></span>
+        </div>
     </div>
 
     <div id="categoryControls" class="search-form">
@@ -45,34 +42,42 @@
         <tbody id="categoryList">
         <tr th:each="category : ${categories}">
             <td>
-                <div th:fragment="categoryTree(category)">
-                    <p th:text="${category?.name}"></p>
-                    <ul th:if="${not #lists.isEmpty(category.children)}">
-                        <li th:each="child : ${category.children}">
-                            <div th:replace="~{::categoryTree(${child})}"></div>
-                        </li>
-                    </ul>
-                </div>
+                <p th:text="${category?.name}"></p>
+                <ul th:if="${not #lists.isEmpty(category.children)}">
+                    <li th:each="child : ${category.children}" th:text="${child?.name}"></li>
+                </ul>
             </td>
         </tr>
         </tbody>
     </table>
 
+    <!-- Paginação -->
     <div id="pagination">
-        <button>First...</button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button>...Last</button>
+        <button th:if="${currentPage > 0}" th:onclick="'goToPage(0)'">Primeira...</button>
+        <button th:if="${currentPage > 0}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">Anterior</button>
+
+        <button th:class="${page == currentPage} ? 'active' : ''"
+                th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                th:onclick="'goToPage(' + ${page} + ')'"
+                th:text="${page + 1}">
+        </button>
+
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">Próxima</button>
+        <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${totalPages - 1} + ')'">...Última</button>
     </div>
 </main>
 <script th:inline="javascript">
         function switchSort() {
             const selectedSort = document.getElementById("sortSelect").value;
             const selectedOrd = document.getElementById("ordSelect").value;
-            if(selectedSort){
-                window.location.href = [[@{/list?sort=}]] + selectedSort + '&asc=' + selectedOrd;
-            }
+            if(selectedSort)
+                window.location.href = 'list?sort=' + selectedSort + '&asc=' + selectedOrd;
+        }
+
+        function goToPage(page) {
+            const sortValue = document.getElementById('sortSelect').value;
+            const ordValue = document.getElementById('ordSelect').value;
+            window.location.href = '/list?page=' + page + '&sort=' + sortValue + '&asc=' + ordValue;
         }
 </script>
 </body>

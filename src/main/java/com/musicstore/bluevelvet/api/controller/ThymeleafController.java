@@ -4,7 +4,6 @@ import com.musicstore.bluevelvet.api.request.CategoryRequest;
 import com.musicstore.bluevelvet.api.response.CategoryResponse;
 import com.musicstore.bluevelvet.domain.service.CategoryService;
 import com.musicstore.bluevelvet.domain.service.FileStorageService;
-import jakarta.persistence.criteria.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,20 +44,7 @@ public class ThymeleafController {
             Authentication authentication
     ) {
         // Adiciona informações do usuário autenticado
-        if (authentication != null) {
-            String userName = "Usuário";
-            if (authentication.getPrincipal() instanceof com.musicstore.bluevelvet.domain.service.CustomUserDetails) {
-                com.musicstore.bluevelvet.domain.service.CustomUserDetails userDetails =
-                        (com.musicstore.bluevelvet.domain.service.CustomUserDetails) authentication.getPrincipal();
-                userName = userDetails.getName();
-            }
-            model.addAttribute("userName", userName);
-            String role = authentication.getAuthorities().stream()
-                    .map(Object::toString)
-                    .findFirst()
-                    .orElse("USER");
-            model.addAttribute("role", role.replace("ROLE_", ""));
-        }
+        addUserInformations(model, authentication);
 
         Page<CategoryResponse> responsePage = service.findAllRoots(
                 PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE,
@@ -121,8 +107,11 @@ public class ThymeleafController {
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "sort", defaultValue = "name") String sort,
             @RequestParam(name = "asc", defaultValue = "true") Boolean asc,
-            Model model
+            Model model,
+            Authentication authentication
     ) {
+        addUserInformations(model, authentication);
+
         Page<CategoryResponse> responsePage = service.findAllRootsWithOrderedChildren(
                 PageRequest.of(page, DEFAULT_LIST_PAGE_SIZE,
                         Sort.by(asc ? Sort.Order.asc(sort) : Sort.Order.desc(sort)))
@@ -131,7 +120,26 @@ public class ThymeleafController {
         model.addAttribute(CATEGORIES, responsePage);
         model.addAttribute("sort", sort);
         model.addAttribute("asc", asc);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", responsePage.getTotalPages());
         return "list";
+    }
+
+    private void addUserInformations(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String userName = "Usuário";
+            if (authentication.getPrincipal() instanceof com.musicstore.bluevelvet.domain.service.CustomUserDetails) {
+                com.musicstore.bluevelvet.domain.service.CustomUserDetails userDetails =
+                        (com.musicstore.bluevelvet.domain.service.CustomUserDetails) authentication.getPrincipal();
+                userName = userDetails.getName();
+            }
+            model.addAttribute("userName", userName);
+            String role = authentication.getAuthorities().stream()
+                    .map(Object::toString)
+                    .findFirst()
+                    .orElse("USER");
+            model.addAttribute("role", role.replace("ROLE_", ""));
+        }
     }
 
     // ============== CREATE CATEGORY ==============

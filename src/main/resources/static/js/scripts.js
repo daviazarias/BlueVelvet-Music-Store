@@ -50,13 +50,15 @@ function updateSort() {
 
 function goToPage(page) {
     const sortValue = document.getElementById('sortSelect').value;
+    const ordValue = document.getElementById('ordSelect').value;
     const searchValue = document.querySelector('input[name="q"]')?.value || '';
     let url;
 
     if (searchValue) {
-        url = '/dashboard/search?q=' + encodeURIComponent(searchValue) + '&page=' + page + '&sort=' + sortValue;
+        url = '/dashboard/search?q=' + encodeURIComponent(searchValue) + '&page=' + page +
+            '&sort=' + sortValue + '&ord=' + ordValue;
     } else {
-        url = '/dashboard?page=' + page + '&sort=' + sortValue;
+        url = '/dashboard?page=' + page + '&sort=' + sortValue + '&asc=' + ordValue;
     }
     window.location.href = url;
 }
