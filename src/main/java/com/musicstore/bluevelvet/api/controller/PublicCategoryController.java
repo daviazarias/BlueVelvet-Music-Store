@@ -26,7 +26,7 @@ import java.util.List;
 public class PublicCategoryController {
 
     private static final Integer SHOP_PAGE_SIZE = 10;
-    private static final Integer PRODUCT_PAGE_SIZE = 12;
+    private static final Integer PRODUCT_PAGE_SIZE = 10;
     private final CategoryService categoryService;
     private final ProductService productService;
 
