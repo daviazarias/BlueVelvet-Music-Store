@@ -65,6 +65,12 @@
         <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">Próxima</button>
         <button th:if="${currentPage < totalPages - 1}" th:onclick="'goToPage(' + ${totalPages - 1} + ')'">...Última</button>
     </div>
+
+    <!-- Link para voltar -->
+    <div class="back-link">
+        <a href="/dashboard">← Voltar para Dashboard</a>
+    </div>
+
 </main>
 <script th:inline="javascript">
         function switchSort() {
