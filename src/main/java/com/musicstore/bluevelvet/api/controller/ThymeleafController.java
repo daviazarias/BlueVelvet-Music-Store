@@ -322,7 +322,11 @@ public class ThymeleafController {
     // ============== RESET CATEGORIES ==============
 
     @PostMapping("/category/reset")
-    public String resetCategories(RedirectAttributes redirectAttributes) {
+    public String resetCategories(RedirectAttributes redirectAttributes, Authentication authentication) {
+
+        if(!checkUserAuthorization(authentication, List.of(ADMIN)))
+            return REDIRECT_AUTHORIZATION_ERROR;
+
         try {
             service.deleteAllAndResetInitial();
             redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE, "Categorias resetadas para estado inicial!");
