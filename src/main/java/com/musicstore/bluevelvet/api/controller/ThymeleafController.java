@@ -173,18 +173,20 @@ public class ThymeleafController {
 
         try {
             // Processar upload de imagem
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String savedFileName = fileStorageService.saveFile(imageFile);
-                request.setImage(savedFileName);
-            }
+            if (imageFile == null || imageFile.isEmpty())
+                throw new IllegalArgumentException("Campo imagem é obrigatório.");
+
+            String savedFileName = fileStorageService.saveFile(imageFile);
+            request.setImage(savedFileName);
 
             request.setIsRoot(request.getParentId() == null);
             service.createCategory(request);
             redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE, "Categoria criada com sucesso!");
             return REDIRECT_DASHBOARD;
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Erro ao criar categoria: " + e.getMessage());
-            return "redirect:/create-category";
+            return REDIRECT_DASHBOARD;
         }
     }
 
