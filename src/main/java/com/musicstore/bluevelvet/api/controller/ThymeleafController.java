@@ -25,7 +25,7 @@ public class ThymeleafController {
 
     public static final String CATEGORY = "category";
     public static final String REDIRECT_DASHBOARD = "redirect:/dashboard";
-    public static final String REDIRECT_AUTHORIZATION_ERROR = "redirect:/shop";
+    public static final String REDIRECT_AUTHORIZATION_ERROR = "redirect:/authorization-error";
     public static final String SUCCESS_MESSAGE = "successMessage";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String CATEGORIES = "categories";
@@ -358,6 +358,12 @@ public class ThymeleafController {
         } catch (Exception e) {
             return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    // ============== AUTHORIZATION ERROR =================
+    @GetMapping("/authorization-error")
+    public String authorizationError() {
+        return "authorization-error";
     }
 
     private void addUserInformations(Model model, Authentication authentication) {

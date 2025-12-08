@@ -244,6 +244,19 @@ table tbody tr:last-child td {
     color: #dc3545;
 }
 
+.error-container {
+    background: linear-gradient(135deg, #ff3c00 0%, #ff0000 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
 /* Welcome Container */
 .welcome-container {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -596,6 +609,7 @@ table tbody tr:last-child td {
 .back-link a {
     color: #667eea;
     font-weight: 600;
+    margin: 150px;
 }
 
 /* Seções */
