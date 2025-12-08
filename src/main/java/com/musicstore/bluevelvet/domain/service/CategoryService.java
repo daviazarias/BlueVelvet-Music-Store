@@ -24,6 +24,8 @@ public class CategoryService {
     private final CategoryRepository repository;
     private final ProductRepository productRepository;
 
+    private final FileStorageService fileStorageService;
+
     public CategoryResponse findById(Long id) {
 
         Category category = repository.findById(id).orElseThrow(() ->
@@ -82,6 +84,10 @@ public class CategoryService {
 
         if (!products.isEmpty()) {
             throw new IllegalArgumentException("Não é possível deletar uma categoria que possui produtos associados.");
+        }
+
+        if (category.getImage() != null && !category.getImage().isEmpty()) {
+            fileStorageService.deleteFile(category.getImage());
         }
 
         repository.deleteById(id);
