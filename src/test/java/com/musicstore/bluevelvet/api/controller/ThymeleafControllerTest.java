@@ -83,7 +83,7 @@ class ThymeleafControllerTest {
         List<CategoryResponse> categories = List.of(categoryResponse);
         Page<CategoryResponse> page = new PageImpl<>(categories);
 
-        when(categoryService.findAllRoots(any(PageRequest.class))).thenReturn(page);
+        when(categoryService.findAll(any(PageRequest.class))).thenReturn(page);
 
         mockMvc.perform(get("/dashboard"))
                 .andExpect(status().isOk())
@@ -109,7 +109,7 @@ class ThymeleafControllerTest {
 
         Page<CategoryResponse> page = new PageImpl<>(categories, PageRequest.of(0, 10), 25);
 
-        when(categoryService.findAllRoots(any(PageRequest.class))).thenReturn(page);
+        when(categoryService.findAll(any(PageRequest.class))).thenReturn(page);
 
         mockMvc.perform(get("/dashboard?page=0"))
                 .andExpect(status().isOk())
@@ -142,7 +142,7 @@ class ThymeleafControllerTest {
         List<CategoryResponse> categories = List.of(categoryResponse);
         Page<CategoryResponse> page = new PageImpl<>(categories);
 
-        when(categoryService.findAllRoots(any(PageRequest.class))).thenReturn(page);
+        when(categoryService.findAll(any(PageRequest.class))).thenReturn(page);
 
         mockMvc.perform(get("/dashboard?sort=name"))
                 .andExpect(status().isOk())
@@ -158,7 +158,7 @@ class ThymeleafControllerTest {
         List<CategoryResponse> categories = List.of(categoryResponse);
         Page<CategoryResponse> page = new PageImpl<>(categories);
 
-        when(categoryService.findAllRoots(any(PageRequest.class))).thenReturn(page);
+        when(categoryService.findAll(any(PageRequest.class))).thenReturn(page);
 
         mockMvc.perform(get("/dashboard?sort=id"))
                 .andExpect(status().isOk())

@@ -43,7 +43,7 @@ public class CategoryService {
                 .toList();
     }
 
-    public Page<CategoryResponse> findAllRoots(Pageable pageable){
+    public Page<CategoryResponse> findAll(Pageable pageable){
         return repository
                 .findAll(pageable)
                 .map(CategoryConverter::convertToCategoryResponse);

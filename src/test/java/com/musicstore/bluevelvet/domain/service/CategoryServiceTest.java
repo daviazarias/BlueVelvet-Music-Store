@@ -142,7 +142,7 @@ class CategoryServiceTest {
      * US-0913: Ordenação por nome
      */
     @Test
-    void testFindAllRootsOrderedByName() {
+    void testFindAllOrderedByName() {
         Category category2 = Category.builder()
                 .id(2L)
                 .name("Jazz")
@@ -155,7 +155,7 @@ class CategoryServiceTest {
 
         when(categoryRepository.findAll(any(PageRequest.class))).thenReturn(page);
 
-        Page<CategoryResponse> result = categoryService.findAllRoots(PageRequest.of(0, 10));
+        Page<CategoryResponse> result = categoryService.findAll(PageRequest.of(0, 10));
 
         assertNotNull(result);
         assertEquals(2, result.getContent().size());
@@ -181,7 +181,7 @@ class CategoryServiceTest {
 
         when(categoryRepository.findAll(any(PageRequest.class))).thenReturn(page);
 
-        Page<CategoryResponse> result = categoryService.findAllRoots(PageRequest.of(0, 10));
+        Page<CategoryResponse> result = categoryService.findAll(PageRequest.of(0, 10));
 
         assertEquals(10, result.getContent().size());
         assertEquals(25, result.getTotalElements());

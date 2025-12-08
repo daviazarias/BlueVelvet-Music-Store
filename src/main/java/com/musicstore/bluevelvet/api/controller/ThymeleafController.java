@@ -60,7 +60,7 @@ public class ThymeleafController {
         // Adiciona informações do usuário autenticado
         addUserInformations(model, authentication);
 
-        Page<CategoryResponse> responsePage = service.findAllRoots(
+        Page<CategoryResponse> responsePage = service.findAll(
                 PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE,
                         Sort.by(asc ? Sort.Order.asc(sort) : Sort.Order.desc(sort))));
 
@@ -104,7 +104,7 @@ public class ThymeleafController {
             responsePage = service.searchCategories(query,
                     PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE, Sort.by(sort)));
         } else {
-            responsePage = service.findAllRoots(
+            responsePage = service.findAll(
                     PageRequest.of(page, DEFAULT_DASHBOARD_PAGE_SIZE, Sort.by(sort)));
         }
 
